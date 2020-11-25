@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>package | nutriverse</title>
+    <link>/tags/package/</link>
+      <atom:link href="/tags/package/index.xml" rel="self" type="application/rss+xml" />
+    <description>package</description>
+    <generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Wed, 15 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>vroom 1.1.0</title>
+      <link>/blog/2020/01/vroom-1-1-0/</link>
+      <pubDate>Wed, 15 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/01/vroom-1-1-0/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;m excited to announce that 
+&lt;a href=&#34;http://vroom.r-lib.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;vroom 1.1.0&lt;/a&gt; is now
+available on CRAN!&lt;/p&gt;
+&lt;p&gt;vroom reads rectangular data, such as comma separated (csv), tab separated (tsv) or fixed width files (fwf) into R.
+It performs similar roles to functions like 
+&lt;a href=&#34;http://readr.r-lib.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;readr::read_csv()&lt;/code&gt;&lt;/a&gt;, 
+&lt;a href=&#34;http://r-datatable.com&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;data.table::fread()&lt;/code&gt;&lt;/a&gt; or &lt;code&gt;read.csv()&lt;/code&gt;.
+But for many datasets &lt;code&gt;vroom::vroom()&lt;/code&gt; can read them much, much faster (hence the name).
+Get the latest version with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;vroom&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And attach the package by running&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(vroom)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Improvements in this release include: a hex logo, support for big integer data, improved delimiter guessing, including delimiters in specifications, and streamlined reading from standard input.&lt;/p&gt;
+&lt;p&gt;See the 
+&lt;a href=&#34;https://vroom.r-lib.org/news/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;change log&lt;/a&gt; for a full list of changes and bug fixes in this version.&lt;/p&gt;
+&lt;h2 id=&#34;hex-logo&#34;&gt;Hex logo&lt;/h2&gt;
+&lt;p&gt;Thanks to 
+&lt;a href=&#34;https://github.com/allisonhorst/stats-illustrations&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Allison Horst&lt;/a&gt; we now have an awesome hex logo for vroom!&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;logo.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;big-integer-support&#34;&gt;Big integer support&lt;/h2&gt;
+&lt;p&gt;R&amp;rsquo;s standard integers are stored in 32 bits of binary data, which means that the largest value they can store is 2,147,483,647 (&lt;code&gt;2^31 - 1&lt;/code&gt;).
+R implicitly converts integers for most operations with doubles to 64-bit floating point values, which is why you may not have noticed this limitation before.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;options&lt;/span&gt;(digits &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;22&lt;/span&gt;)
+x &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2147483647L&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;str&lt;/span&gt;(x)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  int 2147483647&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;str&lt;/span&gt;(x &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1L&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Warning in x + 1L: NAs produced by integer overflow&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  int NA&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;str&lt;/span&gt;(x &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  num 2.15e+09&lt;/span&gt;
+x &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] 2147483648&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;However, even 64-bit floating point values can only store consecutive integers up to 9,007,199,254,740,992 (&lt;code&gt;2^53&lt;/code&gt;) without losing precision.
+You can observe this because if you try adding 1 to this number you will get the same number.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;y &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;9007199254740992&lt;/span&gt;
+z &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; y &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;
+z
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] 9007199254740992&lt;/span&gt;
+y &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; z
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] TRUE&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To store consecutive integers bigger than this you need to use a 64-bit integer type.
+R does not have native support for 64-bit integers, however the 
+&lt;a href=&#34;https://cran.r-project.org/package=bit64&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;bit64&lt;/a&gt; package provides support for them.
+Because these integers are so large, they rarely occur in real world data, however they can often be obtained from generated data, such as database identifiers.&lt;/p&gt;
+&lt;p&gt;vroom 1.1.0 now supports reading these big integers into the &lt;code&gt;integer64&lt;/code&gt; type provided by bit64 with a new &lt;code&gt;col_big_integer()&lt;/code&gt; column type (shortcut &amp;lsquo;I&amp;rsquo;).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;x &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;vroom&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;id\n9007199254740993\n&amp;#34;&lt;/span&gt;, col_type &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;I&amp;#34;&lt;/span&gt;, delim &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;,&amp;#34;&lt;/span&gt;)
+x
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   id              &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;int64&amp;gt;         &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 9007199254740993&lt;/span&gt;
+
+x&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;id &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; integer64&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] 9007199254740994&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;improved-delimiter-guessing&#34;&gt;Improved delimiter guessing&lt;/h2&gt;
+&lt;p&gt;The code to guess delimiters has been rewritten, which should make it more robust to most inputs.
+Previous versions of vroom would fall back to using a newline delimiter if a delimiter could not be guessed.
+vroom 1.1.0 instead throws an error.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;vroom&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;x\n1\n&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Error: Could not guess the delimiter.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Use `vroom(delim =)` to specify one explicitly.&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;vroom&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;x\n1\n&amp;#34;&lt;/span&gt;, delim &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;,&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Rows: 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Columns: 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Delimiter: &amp;#34;,&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; dbl [1]: x&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Use `spec()` to retrieve the guessed column specification&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Pass a specification to the `col_types` argument to quiet this message&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;       x&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1     1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;delimiters-in-the-specification&#34;&gt;Delimiters in the specification&lt;/h2&gt;
+&lt;p&gt;vroom now includes the delimiter in the specification object, which means you no longer have to separately provide the delimiter if you are using an existing specification.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;# read a csv file, the delimiter is provided as &amp;#39;,&amp;#39;&lt;/span&gt;
+x &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;vroom&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;vroom_example&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;mtcars.csv&amp;#34;&lt;/span&gt;), delim &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;,&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Rows: 32&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Columns: 12&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Delimiter: &amp;#34;,&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; chr [ 1]: model&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; dbl [11]: mpg, cyl, disp, hp, drat, wt, qsec, vs, am, gear, carb&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Use `spec()` to retrieve the guessed column specification&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Pass a specification to the `col_types` argument to quiet this message&lt;/span&gt;
+mtcars_spec &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;spec&lt;/span&gt;(x)
+
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;# If the file is read again with the spec, no need to provide the delimiter&lt;/span&gt;
+y &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;vroom&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;vroom_example&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;mtcars.csv&amp;#34;&lt;/span&gt;), col_types &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; mtcars_spec)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;reading-from-standard-input&#34;&gt;Reading from standard input&lt;/h2&gt;
+&lt;p&gt;vroom makes it straightforward to read from the C standard input, like you would do when calling R from the terminal command line.
+Simply use &lt;code&gt;stdin()&lt;/code&gt; as your input. Let&amp;rsquo;s say you want to take the first few lines the mtcars file and find the average horsepower.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;head mtcars.tsv | Rscript -e &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;hp &amp;lt;- vroom::vroom(stdin(), col_types = list())$hp; mean(hp)&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] 122.7778&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;acknowledgements&#34;&gt;Acknowledgements&lt;/h2&gt;
+&lt;p&gt;This release also contains a number of bug fixes and improvements which should make it more robust than previous releases. See the 
+&lt;a href=&#34;https://vroom.r-lib.org/news/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;change log&lt;/a&gt; for full details.&lt;/p&gt;
+&lt;p&gt;A big thanks to all contributors of code, issues and documentation to this release, including many who helped out at the tidyverse developer day in Toulouse, France!&lt;/p&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://github.com/2005m&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@2005m&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/atomman&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@atomman&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/batpigandme&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@batpigandme&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/blairj09&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@blairj09&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Chris-M-P&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Chris-M-P&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/chsafouane&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@chsafouane&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/CriscelyLP&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@CriscelyLP&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/DyfanJones&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@DyfanJones&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/ecoquant&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@ecoquant&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/edzer&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@edzer&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/ericbrownaustin&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@ericbrownaustin&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/estroger34&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@estroger34&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/frm1789&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@frm1789&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/georgevbsantiago&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@georgevbsantiago&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/guiastrennec&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@guiastrennec&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/hadley&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@hadley&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/HenrikBengtsson&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@HenrikBengtsson&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/henry090&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@henry090&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/jaapwalhout&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jaapwalhout&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/jimhester&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jimhester&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/jonaszierer&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jonaszierer&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/kiernann&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@kiernann&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/martindut&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@martindut&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/meta00&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@meta00&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/mgirlich&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@mgirlich&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/mllg&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@mllg&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/osiris08&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@osiris08&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Plebejer&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Plebejer&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/R3myG&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@R3myG&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/randomgambit&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@randomgambit&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/sanromd&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@sanromd&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Shians&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Shians&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/stephen-hayne&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@stephen-hayne&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/vjcitn&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@vjcitn&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/wlattner&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@wlattner&lt;/a&gt;, and 
+&lt;a href=&#34;https://github.com/xiaodaigh&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@xiaodaigh&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

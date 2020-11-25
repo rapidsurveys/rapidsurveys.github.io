@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tidymodels | nutriverse</title>
+    <link>/tags/tidymodels/</link>
+      <atom:link href="/tags/tidymodels/index.xml" rel="self" type="application/rss+xml" />
+    <description>tidymodels</description>
+    <generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Thu, 25 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>recipes 0.1.13</title>
+      <link>/blog/2020/06/recipes-0-1-13/</link>
+      <pubDate>Thu, 25 Jun 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/06/recipes-0-1-13/</guid>
+      <description>&lt;p&gt;We&amp;rsquo;re very chuffed to announce the release of 
+&lt;a href=&#34;https://recipes.tidymodels.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;recipes&lt;/a&gt; 0.1.13. recipes is an alternative method for creating and preprocessing design matrices that can be used for modeling or visualization.&lt;/p&gt;
+&lt;p&gt;You can install it from CRAN with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;recipes&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can see a full list of changes in the 
+&lt;a href=&#34;https://recipes.tidymodels.org/news/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;release notes&lt;/a&gt;. There are some improvements and changes to talk about.&lt;/p&gt;
+&lt;h1 id=&#34;general-changes&#34;&gt;General changes&lt;/h1&gt;
+&lt;p&gt;First, &lt;code&gt;step_filter()&lt;/code&gt;, &lt;code&gt;step_slice()&lt;/code&gt;, &lt;code&gt;step_sample()&lt;/code&gt;, and &lt;code&gt;step_naomit()&lt;/code&gt; had their defaults for &lt;code&gt;skip&lt;/code&gt; changed to &lt;code&gt;TRUE&lt;/code&gt;. In the vast majority of applications, these steps should not be applied to the test or assessment sets.&lt;/p&gt;
+&lt;p&gt;Also, &lt;code&gt;step_upsample()&lt;/code&gt; and &lt;code&gt;step_downsample()&lt;/code&gt; are soft deprecated in recipes as they are now available in the 
+&lt;a href=&#34;https://tidymodels.github.io/themis/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;themis package&lt;/a&gt;. They will be removed in the next version.&lt;/p&gt;
+&lt;p&gt;Finally, for the new version of dplyr, the selectors &lt;code&gt;all_of()&lt;/code&gt; and &lt;code&gt;any_of()&lt;/code&gt; can now be used in step selections.&lt;/p&gt;
+&lt;h1 id=&#34;feature-extraction-improvements&#34;&gt;Feature extraction improvements&lt;/h1&gt;
+&lt;p&gt;In the 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Feature_extraction&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;em&gt;feature extraction&lt;/em&gt;&lt;/a&gt; category, there are two improvements. First, the &lt;code&gt;tidy()&lt;/code&gt; method for &lt;code&gt;step_pca()&lt;/code&gt; can return the percentage of variation accounted for by each 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Principal_component_analysis&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PCA component&lt;/a&gt;. For example:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(tidymodels)
+
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;# Many highly correlated numeric predictors:&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;data&lt;/span&gt;(meats, package &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;modeldata&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#00f&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;2383&lt;/span&gt;)
+split &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;initial_split&lt;/span&gt;(meats)
+meat_tr &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;training&lt;/span&gt;(split)
+meat_te &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;testing&lt;/span&gt;(split)
+
+pca_rec &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;recipe&lt;/span&gt;(water &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; fat &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; protein &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; ., data &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; meat_tr) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;step_normalize&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;step_pca&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;(), num_comp &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;, id &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;pca&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;prep&lt;/span&gt;()
+
+var_info &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;tidy&lt;/span&gt;(pca_rec, id &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;pca&amp;#34;&lt;/span&gt;, type &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;variance&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#00f&#34;&gt;table&lt;/span&gt;(var_info&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;terms)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## 
+## cumulative percent variance         cumulative variance 
+##                         100                         100 
+##            percent variance                    variance 
+##                         100                         100
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;var_info &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  dplyr&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;filter&lt;/span&gt;(terms &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;percent variance&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;ggplot&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;aes&lt;/span&gt;(x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; component, y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; value)) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;geom_bar&lt;/span&gt;(stat &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;identity&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;xlim&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;)) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;ylab&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;% of Total Variation&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;figure/pca-tidy-1.svg&#34; alt=&#34;plot of chunk pca-tidy&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Another change in this version of recipes is that &lt;code&gt;step_pls()&lt;/code&gt; has received an upgrade. 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Partial_least_squares_regression&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Partial least squares&lt;/a&gt; (PLS) is similar to PCA but takes the outcome(s) into account.&lt;/p&gt;
+&lt;p&gt;Previously, it used the 
+&lt;a href=&#34;https://github.com/bhmevik/pls&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pls package&lt;/a&gt; to do the computations. That&amp;rsquo;s a great package but it lacks two important features: allow for a categorical outcome value (e.g. &amp;ldquo;pls-da&amp;rdquo; for &lt;em&gt;discriminant analysis&lt;/em&gt;) or allow for sparsity in the coefficients. Sparsity would facilitate simpler and perhaps more robust models.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;step_pls()&lt;/code&gt; now uses the Bioconductor 
+&lt;a href=&#34;https://www.bioconductor.org/packages/release/bioc/html/mixOmics.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mixOmics package&lt;/a&gt;. As such, the outcome data can now be a factor and a new argument &lt;code&gt;predictor_prop&lt;/code&gt; is used for sparsity. That argument specifies the maximum proportion of partial least squares loadings that will be &lt;em&gt;non-zero&lt;/em&gt; (per component) during training. Newly prepped recipes will use this package but previously created recipes still use the pls package.
+For our previous example, let&amp;rsquo;s look at the protein outcome and build a recipe:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;pls_rec &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;recipe&lt;/span&gt;(water &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; fat &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; protein &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; ., data &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; meat_tr) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;step_normalize&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;step_pls&lt;/span&gt;(
+    &lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;(),
+    outcome &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;vars&lt;/span&gt;(protein),
+    num_comp &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;,
+    predictor_prop &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0.75&lt;/span&gt;,
+    id &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;pls&amp;#34;&lt;/span&gt;
+  ) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;prep&lt;/span&gt;()
+
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;# for new data: &lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;bake&lt;/span&gt;(pls_rec, meat_te, protein, &lt;span style=&#34;color:#00f&#34;&gt;starts_with&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;PLS&amp;#34;&lt;/span&gt;)) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  tidyr&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;pivot_longer&lt;/span&gt;(cols &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;protein),
+                      names_to &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;component&amp;#34;&lt;/span&gt;,
+                      values_to &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;values&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;ggplot&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;aes&lt;/span&gt;(x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; values, y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; protein)) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;geom_point&lt;/span&gt;(alpha &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0.5&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;facet_wrap&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; component, scale &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;free_x&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;xlab&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;PLS Score&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;figure/pls-1.svg&#34; title=&#34;plot of chunk pls&#34; alt=&#34;plot of chunk pls&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;What are the PLS coefficients from this?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;tidy&lt;/span&gt;(pls_rec, id &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;pls&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;ggplot&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;aes&lt;/span&gt;(x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; component, y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; terms, fill &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; value)) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;geom_tile&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;scale_fill_gradient2&lt;/span&gt;(
+    low &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;#B2182B&amp;#34;&lt;/span&gt;,
+    mid &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;white&amp;#34;&lt;/span&gt;,
+    high &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;#2166AC&amp;#34;&lt;/span&gt;,
+    limits &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;-0.4&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;0.4&lt;/span&gt;)
+  ) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;theme&lt;/span&gt;(axis.text.y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;element_blank&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; 
+  &lt;span style=&#34;color:#00f&#34;&gt;ylab&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;Predictors&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;figure/pls-coef-1.svg&#34; title=&#34;plot of chunk pls-coef&#34; alt=&#34;plot of chunk pls-coef&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The third component has the largest coefficients and the largest effect on predicting the percentage of protein. This is consistent with the scatter plot above. The blocks of white in the heatmap above are coefficients effected by the sparsity argument.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>rules 0.0.1</title>
+      <link>/blog/2020/05/rules-0-0-1/</link>
+      <pubDate>Thu, 21 May 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/05/rules-0-0-1/</guid>
+      <description>&lt;p&gt;We are happy to announce the release of the 
+&lt;a href=&#34;https://rules.tidymodels.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;rules package&lt;/a&gt; on 
+&lt;a href=&#34;https://cran.r-project.org/package=rules&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CRAN&lt;/a&gt;. rules is another &amp;ldquo;parsnip-adjacent&amp;rdquo; package that enables a specific class of models within the tidymodels infrastructure.  rules currently contains three models:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;C5_rules()&lt;/code&gt;: classification rule sets based on the C5.0 model.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;cubist_rules()&lt;/code&gt;: regression rules using Cubist.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;rule_fit()&lt;/code&gt;: classification or regression rules using the RuleFit model.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you aren&amp;rsquo;t familiar with rule-based models, there is a 
+&lt;a href=&#34;https://rviews.rstudio.com/2020/05/21/modern-rule-based-models/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;companion blog post&lt;/a&gt; that summarizes how they work.&lt;/p&gt;
+&lt;p&gt;Install rules from CRAN like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;rules&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then attach it for use via:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(rules)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here&amp;rsquo;s an example of creating Cubist regression rules via the 
+&lt;a href=&#34;https://tune.tidymodels.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;parsnip package&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(tidymodels)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ── Attaching packages ──────────────────────────────────── tidymodels 0.1.0 ──&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ✓ broom     0.5.6      ✓ recipes   0.1.12&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ✓ dials     0.0.6      ✓ rsample   0.0.6&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ✓ dplyr     0.8.5      ✓ tibble    3.0.1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ✓ ggplot2   3.3.0      ✓ tune      0.1.0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ✓ infer     0.5.1      ✓ workflows 0.1.1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ✓ parsnip   0.1.1      ✓ yardstick 0.0.6&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ✓ purrr     0.3.4&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ── Conflicts ─────────────────────────────────────── tidymodels_conflicts() ──&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x purrr::accumulate() masks foreach::accumulate()&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x purrr::discard()    masks scales::discard()&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x dplyr::filter()     masks stats::filter()&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x dplyr::lag()        masks stats::lag()&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x ggplot2::margin()   masks dials::margin()&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x recipes::step()     masks stats::step()&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x purrr::when()       masks foreach::when()&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(rules)
+
+&lt;span style=&#34;color:#00f&#34;&gt;data&lt;/span&gt;(car_prices, package &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;modeldata&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#00f&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;9932&lt;/span&gt;)
+car_split &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;initial_split&lt;/span&gt;(car_prices)
+car_tr &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;training&lt;/span&gt;(car_split)
+car_te &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt;  &lt;span style=&#34;color:#00f&#34;&gt;testing&lt;/span&gt;(car_split)
+
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;# A single rule set:&lt;/span&gt;
+cubist_mod &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;cubist_rules&lt;/span&gt;(neighbors &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;7&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;set_engine&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;Cubist&amp;#34;&lt;/span&gt;)
+
+cubist_fit &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt;
+  cubist_mod &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;fit&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;log10&lt;/span&gt;(Price) &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; ., data &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; car_tr)
+
+&lt;span style=&#34;color:#00f&#34;&gt;summary&lt;/span&gt;(cubist_fit&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;fit)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Call:&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; cubist.default(x = x, y = y, committees = 1)&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Cubist [Release 2.07 GPL Edition]  Wed May 20 21:39:22 2020&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ---------------------------------&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     Target attribute `outcome&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Read 603 cases (18 attributes) from undefined.data&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Model:&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 1: [210 cases, mean 4.116360, range 3.94295 to 4.2505, est err 0.030756]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cylinder &amp;lt;= 4&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Saab &amp;lt;= 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 4.115185 + 0.12 Saab - 3.5e-06 Mileage + 0.017 Cylinder&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          - 0.087 hatchback - 0.029 Chevy + 0.046 wagon + 0.028 Leather&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          + 0.041 Cadillac - 0.024 sedan + 0.027 convertible&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          + 0.006 Doors + 0.012 Buick&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 2: [8 cases, mean 4.207121, range 4.13308 to 4.26696, est err 0.006589]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cylinder &amp;gt; 4&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Saturn &amp;gt; 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 3.88624 + 0.057 Cylinder + 0.2 Saab + 0.141 Cadillac&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          - 3.8e-06 Mileage - 0.054 sedan + 0.094 convertible&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          - 0.085 hatchback + 0.019 Doors + 0.04 Buick + 0.014 Cruise&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          + 0.01 Leather + 0.007 Sound + 0.007 Saturn&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 3: [33 cases, mean 4.229076, range 4.16741 to 4.29184, est err 0.012903]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cylinder &amp;gt; 4&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cruise &amp;lt;= 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 4.265627 - 3.7e-06 Mileage + 0.039 Chevy&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 4: [94 cases, mean 4.272727, range 4.18913 to 4.4427, est err 0.034717]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Mileage &amp;gt; 3946&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cylinder &amp;gt; 4&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Doors &amp;gt; 2&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cruise &amp;gt; 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Buick &amp;lt;= 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cadillac &amp;lt;= 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Saturn &amp;lt;= 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 4.037203 + 0.051 Cylinder - 4.3e-06 Mileage + 0.061 Saab&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          + 0.044 Cadillac - 0.016 sedan + 0.029 convertible&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          - 0.026 hatchback + 0.006 Doors - 0.009 Chevy + 0.012 Buick&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          + 0.004 Cruise&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 5: [57 cases, mean 4.314541, range 4.17208 to 4.42864, est err 0.049758]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Buick &amp;gt; 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 4.389884 - 3e-06 Mileage&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 6: [9 cases, mean 4.341528, range 4.23957 to 4.66962, est err 0.036309]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Mileage &amp;lt;= 3946&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cylinder &amp;gt; 4&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cadillac &amp;lt;= 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 3.439093 + 5.28e-05 Mileage + 0.129 Cylinder&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 7: [43 cases, mean 4.354487, range 4.1778 to 4.60071, est err 0.031792]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cylinder &amp;gt; 4&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Doors &amp;lt;= 2&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cruise &amp;gt; 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	convertible &amp;lt;= 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 3.40984 + 0.13 Cylinder + 0.116 Chevy - 2.7e-06 Mileage&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          + 0.037 Sound + 0.031 Leather&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 8: [85 cases, mean 4.462877, range 4.34723 to 4.58348, est err 0.023398]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Saab &amp;gt; 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 4.522928 - 3.4e-06 Mileage + 0.064 Saab - 0.021 Doors&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          - 0.035 sedan + 0.009 Cylinder + 0.022 Cadillac&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          - 0.024 hatchback + 0.015 convertible - 0.004 Chevy&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          + 0.006 Buick&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 9: [60 cases, mean 4.592824, range 4.44778 to 4.84976, est err 0.041948]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cadillac &amp;gt; 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 4.774347 - 0.103 Doors + 0.036 Cylinder - 3.4e-06 Mileage&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   Rule 10: [7 cases, mean 4.625017, range 4.58911 to 4.6727, est err 0.006627]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     if&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cylinder &amp;gt; 4&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Cadillac &amp;lt;= 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	convertible &amp;gt; 0&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     then&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	outcome = 4.693132 - 3.9e-06 Mileage&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Evaluation on training data (603 cases):&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     Average  |error|           0.032526&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     Relative |error|               0.23&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;     Correlation coefficient        0.97&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	Attribute usage:&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	  Conds  Model&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	   67%    84%    Cylinder&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	   49%    66%    Saab&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	   28%    66%    Cadillac&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	   28%    17%    Cruise&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	   25%    66%    Buick&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	   23%    75%    Doors&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	   17%   100%    Mileage&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	   17%     1%    Saturn&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	    8%    66%    convertible&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          77%    Chevy&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          66%    hatchback&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          66%    sedan&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          43%    Leather&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	          35%    wagon&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 	           8%    Sound&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Time: 0.0 secs&lt;/span&gt;
+
+&lt;span style=&#34;color:#00f&#34;&gt;predict&lt;/span&gt;(cubist_fit, car_te &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;select&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;-&lt;/span&gt;Price))
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 201 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;    .pred&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;    &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  1  4.32&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  2  4.49&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  3  4.54&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  4  4.54&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  5  4.43&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  6  4.43&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  7  4.46&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  8  4.44&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  9  4.37&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 10  4.48&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # … with 191 more rows&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The functions also work with the 
+&lt;a href=&#34;https://tune.tidymodels.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tune package&lt;/a&gt;. To optimize our model, the number of committees (similar to boosting iterations) and the number of nearest-neighbors are the primary parameters for tuning.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;cb_grid &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;expand.grid&lt;/span&gt;(committees &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;30&lt;/span&gt;, neighbors &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;7&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;9&lt;/span&gt;))
+
+&lt;span style=&#34;color:#00f&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;8226&lt;/span&gt;)
+car_folds &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;vfold_cv&lt;/span&gt;(car_tr)
+
+cubist_mod &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;cubist_rules&lt;/span&gt;(neighbors &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;tune&lt;/span&gt;(), committees &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;tune&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;set_engine&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;Cubist&amp;#34;&lt;/span&gt;)
+
+car_tune_res &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt;
+  cubist_mod &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;tune_grid&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;log10&lt;/span&gt;(Price) &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; ., resamples &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; car_folds, grid &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; cb_grid)
+
+car_tune_res &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;collect_metrics&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;filter&lt;/span&gt;(.metric &lt;span style=&#34;color:#666&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;rmse&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;mutate&lt;/span&gt;(neighbors &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;factor&lt;/span&gt;(neighbors)) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;ggplot&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;aes&lt;/span&gt;(x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; committees, y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; mean, col &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; neighbors)) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;geom_point&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;geom_line&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;scale_color_brewer&lt;/span&gt;(palette &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;Dark2&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;theme&lt;/span&gt;(legend.position &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;top&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;/blog/2020-05-rules-0-0-1/index_files/figure-html/cb-tune-1.png&#34; width=&#34;700px&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;show_best&lt;/span&gt;(car_tune_res, metric &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;rmse&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 5 x 7&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   committees neighbors .metric .estimator   mean     n std_err&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;        &amp;lt;int&amp;gt;     &amp;lt;dbl&amp;gt; &amp;lt;chr&amp;gt;   &amp;lt;chr&amp;gt;       &amp;lt;dbl&amp;gt; &amp;lt;int&amp;gt;   &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1          9         9 rmse    standard   0.0395    10 0.00133&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 2          5         9 rmse    standard   0.0395    10 0.00132&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 3         11         9 rmse    standard   0.0395    10 0.00133&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 4         13         9 rmse    standard   0.0395    10 0.00132&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 5          8         9 rmse    standard   0.0395    10 0.00131&lt;/span&gt;
+
+smallest_rmse &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;select_best&lt;/span&gt;(car_tune_res, metric &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;rmse&amp;#34;&lt;/span&gt;)
+smallest_rmse
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 2&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   committees neighbors&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;        &amp;lt;int&amp;gt;     &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1          9         9&lt;/span&gt;
+
+final_cb_mod &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt;
+  cubist_mod &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;finalize_model&lt;/span&gt;(smallest_rmse) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;fit&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;log10&lt;/span&gt;(Price) &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; ., data &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; car_tr)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It appears that the benefit of using committees occurs in the first 10 iterations. The nearest-neighbor adjustment was important to obtaining good performance.&lt;/p&gt;
+&lt;p&gt;The test set results look good and are consistent with the resampling estimate of RMSE:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;test_pred &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;predict&lt;/span&gt;(final_cb_mod, car_te) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;bind_cols&lt;/span&gt;(car_te &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;select&lt;/span&gt;(Price)) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;mutate&lt;/span&gt;(Price &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;log10&lt;/span&gt;(Price))
+
+test_pred &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;rmse&lt;/span&gt;(Price, .pred)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 3&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   .metric .estimator .estimate&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;chr&amp;gt;   &amp;lt;chr&amp;gt;          &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 rmse    standard      0.0382&lt;/span&gt;
+
+&lt;span style=&#34;color:#00f&#34;&gt;ggplot&lt;/span&gt;(test_pred, &lt;span style=&#34;color:#00f&#34;&gt;aes&lt;/span&gt;(x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; .pred, y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; Price)) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;geom_abline&lt;/span&gt;(col &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;green&amp;#34;&lt;/span&gt;, lty &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;geom_point&lt;/span&gt;(alpha &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0.5&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;coord_fixed&lt;/span&gt;(ratio &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;/blog/2020-05-rules-0-0-1/index_files/figure-html/cb-test-1.png&#34; width=&#34;700px&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;d like to thank 
+&lt;a href=&#34;https://github.com/holub008&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Karl Holub&lt;/a&gt; for making the 
+&lt;a href=&#34;https://github.com/holub008/xrf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;xrf package&lt;/a&gt; and accepting my PRs and changes.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Announcing tidymodels.org</title>
+      <link>/blog/2020/04/tidymodels-org/</link>
+      <pubDate>Tue, 21 Apr 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/04/tidymodels-org/</guid>
+      <description>&lt;p&gt;We&amp;rsquo;re thrilled to announce the launch of 
+&lt;a href=&#34;https://www.tidymodels.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;tidymodels.org&lt;/code&gt;&lt;/a&gt;! The site is a central location for learning and using the tidymodels packages. It has a new take on a familiar look:&lt;/p&gt;
+&lt;img src=&#34;tidymodels-front-page.png&#34; alt=&#34;tidymodels.org landing page screenshot&#34;&gt;
+&lt;p&gt;This site has a different organization than its tidyverse sibling.&lt;/p&gt;
+&lt;p&gt;The 
+&lt;a href=&#34;https://www.tidymodels.org/start/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;strong&gt;Get Started&lt;/strong&gt;&lt;/a&gt; page has a series of five articles that are aimed at readers who have little to no experience with the tidymodels packages. Each article focuses on a specific task (e.g. building a model), and the last article walks through a case study that brings all of the other elements together.&lt;/p&gt;
+&lt;p&gt;We have consolidated many of the vignettes and articles that showcase code examples on the 
+&lt;a href=&#34;https://www.tidymodels.org/learn/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;strong&gt;Learn&lt;/strong&gt;&lt;/a&gt; page. Previously, these were scattered across package documentation websites. We received feedback that keeping these articles in the individual sites made it too difficult to find the right material, especially when an article used multiple packages. Articles describing specific technical details of an individual package will remain in that specific pkgdown site.&lt;/p&gt;
+&lt;p&gt;The content on the 
+&lt;a href=&#34;https://www.tidymodels.org/learn/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;strong&gt;Learn&lt;/strong&gt;&lt;/a&gt; page is organized into groups:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Perform statistical analysis&lt;/li&gt;
+&lt;li&gt;Create robust models&lt;/li&gt;
+&lt;li&gt;Tune, compare, and work with your models&lt;/li&gt;
+&lt;li&gt;Develop custom modeling tools&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We&amp;rsquo;ll continue to add new articles to the &lt;strong&gt;Learn&lt;/strong&gt; section as we develop new functions in tidymodels, or for specific topics that need more documentation (based on GitHub issues, as well as posts to Stack Overflow or RStudio Community).&lt;/p&gt;
+&lt;p&gt;The 
+&lt;a href=&#34;https://www.tidymodels.org/help/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;strong&gt;Help&lt;/strong&gt;&lt;/a&gt; section is an excellent place to consult when you are stuck on a problem or when you want to know more. There are additional links to books using the tidymodels packages as well as tools to search across 
+&lt;a href=&#34;https://www.tidymodels.org/find/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;all tidymodels functions&lt;/a&gt;, 
+&lt;a href=&#34;https://www.tidymodels.org/find/parsnip/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;parsnip&lt;/code&gt; model functions&lt;/a&gt;, and 
+&lt;a href=&#34;https://www.tidymodels.org/find/recipes/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;recipe&lt;/code&gt; steps&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Blog posts related to tidymodels will still be posted here at the 
+&lt;a href=&#34;https://www.tidyverse.org/blog/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tidyverse blog&lt;/a&gt;. Both &lt;code&gt;tidyverse.org&lt;/code&gt; and &lt;code&gt;tidymodels.org&lt;/code&gt; are Hugo websites built using R with the 
+&lt;a href=&#34;https://bookdown.org/yihui/blogdown/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;blogdown&lt;/a&gt; package. We learned a lot while launching this new website and plan to share about this process in detail soon.&lt;/p&gt;
+&lt;p&gt;The launch of 
+&lt;a href=&#34;https://www.tidymodels.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;tidymodels.org&lt;/code&gt;&lt;/a&gt; would not have been possible without Alison Hill, whose incredible expertise and tenacity made it happen. Additionally, Alison and Julia Silge did an amazing job making the existing content more readable and better organized. 
+&lt;a href=&#34;https://desiree.rbind.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Desirée De Leon&lt;/a&gt; worked her magic to make the site look even better. We also used Allison Horst&amp;rsquo;s 
+&lt;a href=&#34;https://github.com/allisonhorst/stats-illustrations&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;superb illustrations&lt;/a&gt; just to show off. The tidyverse group, Joshua Spiewak, Greg Swinehart, and Sarah Lin (RStudio&amp;rsquo;s Information Architect &amp;amp; Digital Librarian) also contributed valued support and help.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;parsnip-flagger.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>themis 0.1.0</title>
+      <link>/blog/2020/02/themis-0-1-0/</link>
+      <pubDate>Tue, 11 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/02/themis-0-1-0/</guid>
+      <description>&lt;p&gt;We&amp;rsquo;re chuffed to announce the release of 
+&lt;a href=&#34;https://github.com/tidymodels/themis&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;themis&lt;/a&gt; on CRAN. 
+&lt;a href=&#34;https://tidymodels.github.io/themis/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;themis&lt;/a&gt; implements a collection of new steps for the 
+&lt;a href=&#34;https://github.com/tidymodels/recipes&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;recipes&lt;/a&gt; package to deal with unbalanced data. themis is still in early development so any and all feedback is highly appreciated.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(modeldata)
+&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(recipes)
+&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(themis)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In a classification context, a dataset is said to be unbalanced if there is an unequal number of observations in each class. Many models perform best when the number of observations is equal and, thus, tend to struggle with unbalanced data.&lt;/p&gt;
+&lt;p&gt;The steps in this package can be divided into two camps:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ones that remove observations from the majority class(es), and&lt;/li&gt;
+&lt;li&gt;Ones that add observations to the minority class(es).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You can do more than one action, and, thus, are able to mix and match by for example first removing observations from the majority class followed by adding observations to the minority class to achieve the balance you want.&lt;/p&gt;
+&lt;h2 id=&#34;hybrid-sampling-steps&#34;&gt;Hybrid-sampling steps&lt;/h2&gt;
+&lt;p&gt;Hybrid-sampling involves adding observations to the minority class. This can be done in multiple ways, one way is to sample existing data points like &lt;code&gt;step_upsample()&lt;/code&gt; does, another way is to synthetically generate new points based on existing points, &lt;code&gt;step_smote()&lt;/code&gt; and related steps uses k nearest neighbor information to generate new points. Currently &lt;code&gt;step_upsample()&lt;/code&gt;, &lt;code&gt;step_smote()&lt;/code&gt;, &lt;code&gt;step_bsmote()&lt;/code&gt;, &lt;code&gt;step_adasyn()&lt;/code&gt;, and &lt;code&gt;step_rose()&lt;/code&gt; are available. All steps have references in their respective help pages. They have slightly different requirements according to the data they can handle; most need all numeric with no missing data, but those requirements can and should be handled by previous steps.&lt;/p&gt;
+&lt;p&gt;In the following example, let&amp;rsquo;s look at the &lt;code&gt;okc&lt;/code&gt; dataset. and we can see that the imbalance is 1-to-6.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;data&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;okc&amp;#34;&lt;/span&gt;)
+
+&lt;span style=&#34;color:#00f&#34;&gt;table&lt;/span&gt;(okc&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;Class)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  stem other &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  9539 50316&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We will use &lt;code&gt;age&lt;/code&gt;, &lt;code&gt;diet&lt;/code&gt; and &lt;code&gt;height&lt;/code&gt; in modeling to predict &lt;code&gt;Class&lt;/code&gt;. Since &lt;code&gt;diet&lt;/code&gt; is a factor, we first need to dummify it before we normalize and perform mean imputation to handle all the missing data.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;rec &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;recipe&lt;/span&gt;(Class &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; age &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; diet &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; height, data &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; okc) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_unknown&lt;/span&gt;(diet) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_dummy&lt;/span&gt;(diet) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_normalize&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_meanimpute&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_smote&lt;/span&gt;(Class) 
+
+rec &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;prep&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;juice&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;pull&lt;/span&gt;(Class) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;table&lt;/span&gt;()
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; .&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  stem other &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 50316 50316&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we see that the resulting dataset has a perfectly even distribution. All the hybrid-sampling steps share the parameter &lt;code&gt;over_ratio&lt;/code&gt;, which specifies the desired ratio between the biggest class and the smallest class. It defaults to 1 for an even distribution but can be set to something like &lt;code&gt;0.5&lt;/code&gt; to have the minority class become half the size of the majority class.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;rec &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;recipe&lt;/span&gt;(Class &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; age &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; diet &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; height, data &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; okc) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_unknown&lt;/span&gt;(diet) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_dummy&lt;/span&gt;(diet) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_normalize&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_meanimpute&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_smote&lt;/span&gt;(Class, over_ratio &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0.5&lt;/span&gt;) 
+
+rec &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;prep&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;juice&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;pull&lt;/span&gt;(Class) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;table&lt;/span&gt;()
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; .&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  stem other &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 25158 50316&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;under-sampling-steps&#34;&gt;Under-sampling steps&lt;/h2&gt;
+&lt;p&gt;Under-sampling is removing observations from the majority class. Currently &lt;code&gt;step_downsample()&lt;/code&gt;, &lt;code&gt;step_nearmiss()&lt;/code&gt; and &lt;code&gt;step_tomek()&lt;/code&gt; are available. These steps should have the same user experience as the previous steps as they have a similar shared parameter &lt;code&gt;under_ratio&lt;/code&gt; which is the ratio between the smallest and the biggest class. Simply using &lt;code&gt;step_downsample()&lt;/code&gt; randomly removes samples in the majority classes to get them to be the same size as the smallest class.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;rec &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;recipe&lt;/span&gt;(Class &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; age &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; diet &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; height, data &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; okc) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_unknown&lt;/span&gt;(diet) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_dummy&lt;/span&gt;(diet) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_normalize&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_meanimpute&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;all_predictors&lt;/span&gt;()) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;step_downsample&lt;/span&gt;(Class) 
+
+rec &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;prep&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;juice&lt;/span&gt;() &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;pull&lt;/span&gt;(Class) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt;
+  &lt;span style=&#34;color:#00f&#34;&gt;table&lt;/span&gt;()
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; .&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  stem other &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  9539  9539&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

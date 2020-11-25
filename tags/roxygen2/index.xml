@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>roxygen2 | nutriverse</title>
+    <link>/tags/roxygen2/</link>
+      <atom:link href="/tags/roxygen2/index.xml" rel="self" type="application/rss+xml" />
+    <description>roxygen2</description>
+    <generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Wed, 11 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>roxygen2 7.1.0</title>
+      <link>/blog/2020/03/roxygen2-7-1-0/</link>
+      <pubDate>Wed, 11 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/03/roxygen2-7-1-0/</guid>
+      <description>&lt;p&gt;We&amp;rsquo;re chuffed to announce the release of 
+&lt;a href=&#34;https://roxygen2.r-lib.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;roxygen2 7.1.0&lt;/a&gt;.
+roxygen2 allows you to write specially formatted R comments that generate R documentation files (&lt;code&gt;man/*.Rd&lt;/code&gt;) and the &lt;code&gt;NAMESPACE&lt;/code&gt; file.
+roxygen2 is used by over 8,800 CRAN packages.&lt;/p&gt;
+&lt;p&gt;Install the latest version of roxygen2 with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;roxygen2&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is a minor release, with many small improvements and bug fixes, and some new features.
+This blog post discusses the most important changes. See the 
+&lt;a href=&#34;https://roxygen2.r-lib.org/news/index.html#roxygen2-7-1-0&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;full changelog&lt;/a&gt; for all changes.&lt;/p&gt;
+&lt;h2 id=&#34;roxygen2-meets-knitr&#34;&gt;roxygen2 meets knitr&lt;/h2&gt;
+&lt;p&gt;We have been gradually improving roxygen2&amp;rsquo;s markdown support, and this release has an exciting new markdown feature as well.
+Starting from roxygen2 7.1.0 you can write inline R code and markdown code fences directly in roxygen2 comments!
+roxygen2 runs the R code and inserts its output into the documentation.&lt;/p&gt;
+&lt;h3 id=&#34;inline-r-code&#34;&gt;Inline R code&lt;/h3&gt;
+&lt;p&gt;For running R code inline, use the usual markdown backticks, and prefix the code with &lt;code&gt;r&lt;/code&gt; and a space character.
+roxygen2 interprets the rest of the text within backticks as R code, evaluates it, and replaces the backtick expression with its value.
+After all such substitutions, the text of the whole tag is interpreted as markdown, as usual.&lt;/p&gt;
+&lt;p&gt;For example, the following code inserts the date and the R version of the roxygen2 run.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; roxygen2 created this manual page on `r Sys.Date()` using R version&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; `r getRversion()`.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;code-blocks-fences&#34;&gt;Code blocks (fences)&lt;/h3&gt;
+&lt;p&gt;Markdown code blocks can be dynamic as well, if you use &lt;code&gt;```{r}&lt;/code&gt; to start them, just like in knitr documents.
+roxygen evaluates the code, and (by default) both the code and the printed value of the expression will be inserted into the manual page.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; ```{r}&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; # This block of code will be evaluated&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; summary(iris)&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; ```&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Code blocks support knitr chunk options, e.g. to keep the output of several expressions together, you can specify &lt;code&gt;results= &amp;quot;hold&amp;quot;&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; ```{r results = &amp;#34;hold&amp;#34;}&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; names(mtcars)&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; nrow(mtcars)&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; ```&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;By default plots create &lt;code&gt;.png&lt;/code&gt; files in the &lt;code&gt;man/figures&lt;/code&gt; directory. The file names are created from the chunk names:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; ```{r r-cookbook-barplot}&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; # https://r-graphics.org/recipe-distribution-basic-hist&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; library(ggplot2)&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; ggplot(faithful, aes(x = waiting)) +&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39;   geom_histogram()&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;#39; ```&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Both the inline R code and the markdown code fences are evaluated when you run &lt;code&gt;devtools::document()&lt;/code&gt; (or &lt;code&gt;roxygenize()&lt;/code&gt;).
+You probably want to avoid lengthy computations, or set up caching to keep your package development workflow snappy.&lt;/p&gt;
+&lt;p&gt;Please see &lt;code&gt;vignette(&amp;quot;rd-formatting&amp;quot;)&lt;/code&gt; for more about dynamic documentation, including potential caveats.&lt;/p&gt;
+&lt;h2 id=&#34;line-ending-conversion&#34;&gt;Line ending conversion&lt;/h2&gt;
+&lt;p&gt;This version of roxygen2 does a much better job at keeping the line ending characters consistent within each file, across operating systems.
+In particular, if a generated file has only Windows (CR LF) line endings, roxygen2 keeps the file that way.
+If a file has mixed Windows and Unix (LF) line endings, roxygen2 converts all line endings to Unix (LF).
+For new files roxygen2 uses LF file endings.
+If you want to convert a file from CR LF line endings to LF, simply remove it and let roxygen2 re-create it.&lt;/p&gt;
+&lt;p&gt;The new convention works better with git on Windows.
+Windows git, depending on configuration, might or might not convert between CR LF and LF line endings when checking out and when committing code.
+No matter which git option you use, roxygen2 now does not introduce spurious line ending changes.&lt;/p&gt;
+&lt;p&gt;Thanks to 
+&lt;a href=&#34;https://github.com/jonthegeek&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jonthegeek&lt;/a&gt; and 
+&lt;a href=&#34;https://github.com/jimhester&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jimhester&lt;/a&gt; for working on this feature.&lt;/p&gt;
+&lt;h2 id=&#34;some-other-improvements&#34;&gt;Some other improvements&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Hyperlinks to R6 methods are also added in the PDF manual.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;@description NULL&lt;/code&gt; and &lt;code&gt;@details NULL&lt;/code&gt; no longer fail; instead, these tags
+are ignored, except for &lt;code&gt;@description NULL&lt;/code&gt; in package level documentation,
+where it can be used to suppress the auto-generated &amp;lsquo;Description&amp;rsquo; section.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Multiple &lt;code&gt;@format&lt;/code&gt; tags are now combined.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;@evalNamespace()&lt;/code&gt; works again.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;acknowledgements&#34;&gt;Acknowledgements&lt;/h2&gt;
+&lt;p&gt;A big thanks to all 40 contributors who helped make this release possible! 
+&lt;a href=&#34;https://github.com/alandipert&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@alandipert&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/allenzhuaz&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@allenzhuaz&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/BenEngbers&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@BenEngbers&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/bgctw&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@bgctw&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/billdenney&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@billdenney&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Bisaloo&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Bisaloo&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/cboettig&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@cboettig&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/dmurdoch&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@dmurdoch&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/dragosmg&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@dragosmg&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/eddelbuettel&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@eddelbuettel&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/gaborcsardi&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@gaborcsardi&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/genomaths&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@genomaths&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/goldingn&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@goldingn&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/hadley&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@hadley&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/HenrikBengtsson&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@HenrikBengtsson&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Hong-Revo&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Hong-Revo&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/hughjonesd&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@hughjonesd&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/iferres&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@iferres&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/IndrajeetPatil&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@IndrajeetPatil&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/jameslamb&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jameslamb&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/jimhester&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jimhester&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/kingaa&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@kingaa&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/kortschak&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@kortschak&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/krlmlr&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@krlmlr&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/maelle&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@maelle&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/michaelquinn32&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@michaelquinn32&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/mikemahoney218&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@mikemahoney218&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/mstr3336&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@mstr3336&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/muschellij2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@muschellij2&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/nteetor&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@nteetor&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/ntguardian&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@ntguardian&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/pat-s&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@pat-s&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/RaphaelS1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@RaphaelS1&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/russHyde&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@russHyde&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/s-fleck&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@s-fleck&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/stefanfritsch&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@stefanfritsch&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/strboul&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@strboul&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/TomKellyGenetics&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@TomKellyGenetics&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/VPetukhov&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@VPetukhov&lt;/a&gt;, and 
+&lt;a href=&#34;https://github.com/zachary-foster&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@zachary-foster&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

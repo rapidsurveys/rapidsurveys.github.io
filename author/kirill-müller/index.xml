@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kirill Müller | nutriverse</title>
+    <link>/author/kirill-m%C3%BCller/</link>
+      <atom:link href="/author/kirill-m%C3%BCller/index.xml" rel="self" type="application/rss+xml" />
+    <description>Kirill Müller</description>
+    <generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Thu, 09 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>tibble 3.0.0</title>
+      <link>/blog/2020/04/tibble-3-0-0/</link>
+      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/04/tibble-3-0-0/</guid>
+      <description>&lt;p&gt;Version 3.0.0 of the tibble package is on CRAN now. Tibbles are a modern reimagining of the data frame, keeping what time has shown to be effective, and throwing out what is not, with nicer default output too! Grab the latest version with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;install.packages&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;tibble&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Tibble now fully embraces vctrs, using it under the hood for its subsetting and subset assignment (&amp;ldquo;subassignment&amp;rdquo;) operations.
+Accessing and updating rows and columns is now based on a rock-solid framework and works consistently for all types of columns, including list, data frame, and
+matrix columns.
+We believe that the changes will ultimately lead to better and safer code.&lt;/p&gt;
+&lt;p&gt;This major release required quite some preparation, including a 
+&lt;a href=&#34;https://tibble.tidyverse.org/articles/invariants.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;new vignette&lt;/a&gt; that describes the behavior of subsetting and subset assignment operations and the reasoning behind it.
+For a complete overview please see the 
+&lt;a href=&#34;https://tibble.tidyverse.org/news/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;release notes&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In a nutshell: if an object is a vector, it can be part of a tibble.
+My new 
+&lt;a href=&#34;https://github.com/krlmlr/awesome-vctrs#readme&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Awesome vectors&lt;/a&gt; list aims at giving an overview of available implementations of vector types in R.
+If you&amp;rsquo;re using a specialized class, or even implemented one, please file an issue in that repository or contribute an example.
+For problems with tibble, use the 
+&lt;a href=&#34;https://github.com/tidyverse/tibble/issues&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;issue tracker&lt;/a&gt; to report bugs or suggest ideas, your contributions are always welcome.&lt;/p&gt;
+&lt;p&gt;The rest of the post is about the technical details of a tibble, and therefore mostly suited for interested R programmers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What can be part of a tibble?&lt;/li&gt;
+&lt;li&gt;Size and length&lt;/li&gt;
+&lt;li&gt;Sturdy recycling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;what-can-be-part-of-a-tibble&#34;&gt;What can be part of a tibble?&lt;/h2&gt;
+&lt;p&gt;Tibbles and data frames are collections of columns, where each column is a vector of the same size.
+Neat.&lt;/p&gt;
+&lt;p&gt;What is a vector?
+What is its size?&lt;/p&gt;
+&lt;p&gt;The new 
+&lt;a href=&#34;https://vctrs.r-lib.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;vctrs package&lt;/a&gt; is dedicated to answering these surprisingly tricky questions.
+Because this blog post describes many functions of this package, we load it.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(vctrs)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The 
+&lt;a href=&#34;https://vctrs.r-lib.org/reference/vec_assert.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;vec_is()&lt;/code&gt;&lt;/a&gt; function decides if an object is a vector.
+This is important, because some objects are inherently scalar and cannot be added as a column to a data frame.&lt;/p&gt;
+&lt;p&gt;Obviously, integers, characters, and other atomic objects (logical, numeric, complex, and raw) are vectors.
+Environments, functions, and other &amp;ldquo;special&amp;rdquo; types of objects are clearly non-vectors.
+Most objects that consist of an atomic type with a &lt;code&gt;&amp;quot;class&amp;quot;&lt;/code&gt; attribute are also vectors: examples are &lt;code&gt;POSIXct&lt;/code&gt; and 
+&lt;a href=&#34;https://hms.tidyverse.org/reference/hms.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;hms::hms()&lt;/code&gt;&lt;/a&gt;.
+Lists are harder because some lists are vectors and some are not.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;vec_is()&lt;/code&gt; function implements a heuristic that works automatically in most cases and adds a few special cases from base R.
+By relying on &lt;code&gt;vec_is()&lt;/code&gt;, the &lt;code&gt;tibble()&lt;/code&gt; function and others can give an early error if used with an inherent scalar:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(tibble)
+model &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;lm&lt;/span&gt;(y &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; x, &lt;span style=&#34;color:#00f&#34;&gt;data.frame&lt;/span&gt;(x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;, y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;), model &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;FALSE&lt;/span&gt;)
+&lt;span style=&#34;color:#00f&#34;&gt;tibble&lt;/span&gt;(model)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Error: All columns in a tibble must be vectors.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x Column `model` is a `lm` object.&lt;/span&gt;
+time &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;Sys.time&lt;/span&gt;()
+&lt;span style=&#34;color:#00f&#34;&gt;tibble&lt;/span&gt;(time)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   time               &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;dttm&amp;gt;             &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 2020-04-09 20:38:28&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The new 
+&lt;a href=&#34;https://tibble.tidyverse.org/reference/tibble.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;tibble_row()&lt;/code&gt;&lt;/a&gt; function reverses this: inherent scalars are wrapped in lists:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;tibble_row&lt;/span&gt;(model)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   model &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;list&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 &amp;lt;lm&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;tibble_row&lt;/span&gt;(time)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   time               &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;dttm&amp;gt;             &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 2020-04-09 20:38:28&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;tibble_row&lt;/span&gt;(time &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;rep&lt;/span&gt;(time, &lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;))
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Error: All vectors must be size one, use `list()` to wrap.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x Column `time` is of size 2.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If you have implemented a vector class, double-check that 
+&lt;a href=&#34;https://vctrs.r-lib.org/reference/vec_assert.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;vec_is()&lt;/code&gt;&lt;/a&gt; returns &lt;code&gt;TRUE&lt;/code&gt; for your objects.
+Please also add it to my 
+&lt;a href=&#34;https://github.com/krlmlr/awesome-vctrs#readme&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Awesome vectors&lt;/a&gt; list, or file an issue.&lt;/p&gt;
+&lt;h2 id=&#34;size-and-length&#34;&gt;Size and length&lt;/h2&gt;
+&lt;p&gt;Data frames and matrices are also recognized vectors, and can be part of a tibble:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;df &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;data.frame&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;, b &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)
+m &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;matrix&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;6&lt;/span&gt;, ncol &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;)
+
+&lt;span style=&#34;color:#00f&#34;&gt;vec_is&lt;/span&gt;(df)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] TRUE&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;vec_is&lt;/span&gt;(m)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] TRUE&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;tibble&lt;/span&gt;(packed &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; df)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 3 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   packed$a    $b&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;      &amp;lt;int&amp;gt; &amp;lt;int&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1        1     2&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 2        2     3&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 3        3     4&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;tibble&lt;/span&gt;(m)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 2 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   m[,1]  [,2]  [,3]&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;int&amp;gt; &amp;lt;int&amp;gt; &amp;lt;int&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1     1     3     5&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 2     2     4     6&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &amp;ldquo;elements&amp;rdquo; of a data frame or matrix are its rows.
+All subsetting and subassignment operations now use 
+&lt;a href=&#34;https://vctrs.r-lib.org/reference/vec_slice.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;vec_slice()&lt;/code&gt;&lt;/a&gt; under the hood.
+Contrary to &lt;code&gt;[&lt;/code&gt;, slicing will work along the rows for matrices and data frames.&lt;/p&gt;
+&lt;p&gt;For these and a few types, length and size are different: the length refers to the size of the internal data format, whereas the size is the number of elements.
+The 
+&lt;a href=&#34;https://vctrs.r-lib.org/reference/vec_size.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;vec_size()&lt;/code&gt;&lt;/a&gt; function, modeled after &lt;code&gt;NROW()&lt;/code&gt;, returns the latter:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;vec_size&lt;/span&gt;(df)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] 3&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;length&lt;/span&gt;(df)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] 2&lt;/span&gt;
+
+&lt;span style=&#34;color:#00f&#34;&gt;vec_size&lt;/span&gt;(m)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] 2&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;length&lt;/span&gt;(m)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; [1] 6&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For your own code, it is almost always safer to use &lt;code&gt;vec_size()&lt;/code&gt; instead of &lt;code&gt;length()&lt;/code&gt;.
+Use &lt;code&gt;ncol()&lt;/code&gt; to count the columns in a data frame.&lt;/p&gt;
+&lt;h2 id=&#34;sturdy-recycling&#34;&gt;Sturdy recycling&lt;/h2&gt;
+&lt;p&gt;We always recycled only vectors of size one in &lt;code&gt;tibble()&lt;/code&gt; and &lt;code&gt;as_tibble()&lt;/code&gt;.
+This now also applies to subassignment.
+We believe that most of the time this is an unintended error.
+Please use an explicit &lt;code&gt;rep()&lt;/code&gt; or &lt;code&gt;rep_len()&lt;/code&gt; if you really need to create a column that consists of multiple repetitions of a vector.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;x &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;tibble&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)
+x&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;a &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Error: Assigned data `1:2` must be compatible with existing data.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x Existing data has 4 rows.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x Assigned data has 2 rows.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ℹ Only vectors of size 1 are recycled.&lt;/span&gt;
+x&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;a &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;)
+x
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 4 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;       a&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;int&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1     1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 2     2&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 3     1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 4     2&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Related errors may also appear when applying a pattern that works with regular data frames:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;x &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;data.frame&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, b &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;)
+x[1, ] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;, b &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)
+x
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   a b&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 3 4&lt;/span&gt;
+
+x &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;tibble&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, b &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2&lt;/span&gt;)
+x[1, ] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;, b &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Error: Assigned data `c(a = 3, b = 4)` must be compatible with row subscript `1`.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x 1 row must be assigned.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; x Assigned data has 2 rows.&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; ℹ Row updates require a list value. Do you need `list()` or `as.list()`?&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is because all vectors on the right-hand side are treated as columnar data.
+Convert to a list to treat the input as row data:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;x[1, ] &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;list&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;, b &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)
+x
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 2&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;       a     b&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1     3     4&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The ambiguity between a row vector and a column vector also affects the &lt;code&gt;as_tibble()&lt;/code&gt; function.
+For this reason, it is now superseded for atomic and list inputs.
+In new code, use the new 
+&lt;a href=&#34;https://tibble.tidyverse.org/reference/as_tibble.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;as_tibble_row()&lt;/code&gt; and &lt;code&gt;as_tibble_col()&lt;/code&gt;&lt;/a&gt; functions to clarify intent.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;as_tibble_row&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;, b &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;))
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 2&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;       a     b&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1     3     4&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;as_tibble_col&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(a &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;, b &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;))
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 2 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   value&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1     3&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 2     4&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;acknowledgments&#34;&gt;Acknowledgments&lt;/h2&gt;
+&lt;p&gt;Due to the nature of the changes, about 60 CRAN packages were failing with our release candidate.
+Many thanks to the maintainers of downstream packages who were very helpful in making this upgrade a smooth experience.&lt;/p&gt;
+&lt;p&gt;Thanks to the following contributors who sent issues, pull requests, and comments since tibble 2.1.3:&lt;/p&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://github.com/adamdsmith&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@adamdsmith&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/alankjackson&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@alankjackson&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/anabbott&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@anabbott&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/batpigandme&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@batpigandme&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/billdenney&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@billdenney&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/borisleto&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@borisleto&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Breza&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Breza&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Cervangirard&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Cervangirard&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/courtiol&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@courtiol&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/dan-reznik&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@dan-reznik&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/daviddalpiaz&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@daviddalpiaz&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/DavisVaughan&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@DavisVaughan&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/elinw&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@elinw&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/EmilHvitfeldt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@EmilHvitfeldt&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/eran3006&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@eran3006&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/frederikziebell&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@frederikziebell&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/gavinsimpson&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@gavinsimpson&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/gdequeiroz&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@gdequeiroz&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/guiastrennec&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@guiastrennec&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/hadley&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@hadley&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/HashRocketSyntax&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@HashRocketSyntax&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/hope-data-science&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@hope-data-science&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/jennybc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jennybc&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/jmgirard&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jmgirard&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/kevinwolz&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@kevinwolz&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/kieranjmartin&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@kieranjmartin&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/lionel-&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@lionel-&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/LudvigOlsen&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@LudvigOlsen&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/mabafaba&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@mabafaba&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/matteodefelice&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@matteodefelice&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/MatthieuStigler&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@MatthieuStigler&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/md0u80c9&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@md0u80c9&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/michaelquinn32&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@michaelquinn32&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/mitchelloharawild&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@mitchelloharawild&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/moodymudskipper&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@moodymudskipper&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/msberends&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@msberends&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/pavopax&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@pavopax&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/rbjanis&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@rbjanis&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/romainfrancois&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@romainfrancois&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/rvg02010&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@rvg02010&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/sfirke&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@sfirke&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Shians&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Shians&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/ShixiangWang&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@ShixiangWang&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/stephensrmmartin&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@stephensrmmartin&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/stufield&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@stufield&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/Tazinho&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Tazinho&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/TimTeaFan&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@TimTeaFan&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/tyluRp&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@tyluRp&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/wgrundlingh&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@wgrundlingh&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/xvrdm&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@xvrdm&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/yannabraham&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@yannabraham&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/ycroissant&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@ycroissant&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/yogat3ch&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@yogat3ch&lt;/a&gt;, and 
+&lt;a href=&#34;https://github.com/yutannihilation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@yutannihilation&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Your contributions are very valuable and important to us!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

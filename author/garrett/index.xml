@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nutriverse</title>
+    <link>/author/garrett/</link>
+      <atom:link href="/author/garrett/index.xml" rel="self" type="application/rss+xml" />
+    <description>nutriverse</description>
+    <generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Tue, 19 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>haven 2.1.0</title>
+      <link>/blog/2019/02/haven-2-1-0/</link>
+      <pubDate>Tue, 19 Feb 2019 00:00:00 +0000</pubDate>
+      <guid>/blog/2019/02/haven-2-1-0/</guid>
+      <description>&lt;p&gt;We&amp;rsquo;re delighted to announce that 
+&lt;a href=&#34;https://haven.tidyverse.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;haven 2.1.0&lt;/a&gt; is now on CRAN. haven enables R to read and write various data formats used by other statistical packages by wrapping the 
+&lt;a href=&#34;https://github.com/WizardMac/ReadStat&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ReadStat&lt;/a&gt; C library written by 
+&lt;a href=&#34;https://www.evanmiller.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Evan Miller&lt;/a&gt;. For a full account of updates in this release, see the 
+&lt;a href=&#34;https://haven.tidyverse.org/news/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Changelog&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;improved-labelling&#34;&gt;Improved labelling&lt;/h2&gt;
+&lt;p&gt;Both 
+&lt;a href=&#34;https://haven.tidyverse.org/reference/labelled.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;labelled()&lt;/code&gt;&lt;/a&gt; and 
+&lt;a href=&#34;https://haven.tidyverse.org/reference/labelled_spss.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;labelled_spss()&lt;/code&gt;&lt;/a&gt; now allow &lt;code&gt;NULL&lt;/code&gt; labels. This makes both classes more flexible, allowing you to use them for their other attributes.&lt;code&gt;labelled()&lt;/code&gt; also now tests that value labels are unique.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;labelled&lt;/code&gt; objects now get pretty printing that shows the labels and &lt;code&gt;NA&lt;/code&gt; values when inside of a &lt;code&gt;tbl_df&lt;/code&gt;. You can turn this behaviour off by using &lt;code&gt;option(haven.show_pillar_labels = FALSE)&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;tibble&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;tibble&lt;/span&gt;(s &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; haven&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;labelled&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;), labels &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;A&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;B&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;10&lt;/span&gt;)))
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 2 x 1&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   s        &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;dbl+lbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1  1       &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 2 10&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;minor-improvements-and-fixes&#34;&gt;Minor improvements and fixes&lt;/h2&gt;
+&lt;p&gt;This release is updated to the latest version of Evan Miller&amp;rsquo;s 
+&lt;a href=&#34;https://github.com/WizardMac/ReadStat&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ReadStat&lt;/a&gt;, which includes the following changes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://haven.tidyverse.org/reference/read_spss.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;read_por()&lt;/code&gt;&lt;/a&gt; can now read files from SPSS 25.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://haven.tidyverse.org/reference/read_spss.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;read_por()&lt;/code&gt;&lt;/a&gt; uses base-10 instead of base-30 for the exponent.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://haven.tidyverse.org/reference/read_sas.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;read_sas()&lt;/code&gt;&lt;/a&gt; can read zero-column files.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://haven.tidyverse.org/reference/read_spss.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;read_sav()&lt;/code&gt;&lt;/a&gt; now reads long strings, and has greater memory limit, allowing it to read more labels.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://haven.tidyverse.org/reference/read_spss.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;read_spss()&lt;/code&gt;&lt;/a&gt; reads long variable labels.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://haven.tidyverse.org/reference/read_spss.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;write_sav()&lt;/code&gt;&lt;/a&gt; no longer creates incorrect column names when &amp;gt;10k columns.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://haven.tidyverse.org/reference/read_spss.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;write_sav()&lt;/code&gt;&lt;/a&gt; no longer crashes when writing long label names.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;acknowledgements&#34;&gt;Acknowledgements&lt;/h2&gt;
+&lt;p&gt;Thank you to Evan Miller, as well as
+
+&lt;a href=&#34;https://github.com/armenic&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@armenic&lt;/a&gt;,  
+&lt;a href=&#34;https://github.com/beckerbenj&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@beckerbenj&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/caayala&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@caayala&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/gergness&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@gergness&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/jeffeaton&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@jeffeaton&lt;/a&gt;,  
+&lt;a href=&#34;https://github.com/philstraforelli&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@philstraforelli&lt;/a&gt;, 
+&lt;a href=&#34;https://github.com/thays42&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@thays42&lt;/a&gt;, and 
+&lt;a href=&#34;https://github.com/visseho&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@visseho&lt;/a&gt; for their contributions to this release.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

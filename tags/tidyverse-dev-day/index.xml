@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tidyverse-dev-day | nutriverse</title>
+    <link>/tags/tidyverse-dev-day/</link>
+      <atom:link href="/tags/tidyverse-dev-day/index.xml" rel="self" type="application/rss+xml" />
+    <description>tidyverse-dev-day</description>
+    <generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Fri, 28 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>More 2020 tidy dev days!</title>
+      <link>/blog/2020/02/tidy-dev-days-2020/</link>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/02/tidy-dev-days-2020/</guid>
+      <description>&lt;h2 id=&#34;post-rstudioconf2020-dev-day&#34;&gt;Post-rstudio::conf(2020) dev day&lt;/h2&gt;
+&lt;p&gt;First and foremost: thank you to everyone who participated in Tidyverse developer day following rstudio::conf(2020)! We merged 
+&lt;a href=&#34;https://twitter.com/juliasilge/status/1223408797378416640?s=20&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;60 pull requests&lt;/a&gt; on the day of, have merged 
+&lt;a href=&#34;https://github.com/search?q=is%3Apr&amp;#43;label%3A%22tidy-dev-day&amp;#43;%3Anerd_face%3A%22&amp;#43;created%3A%3E2020-01-30&amp;#43;is%3Amerged&amp;amp;type=Issues&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;over 80&lt;/a&gt; PRs to date, with roughly 
+&lt;a href=&#34;https://github.com/search?q=is%3Apr&amp;#43;label%3A%22tidy-dev-day&amp;#43;%3Anerd_face%3A%22&amp;#43;created%3A%3E2020-01-30&amp;#43;is%3Aunmerged&amp;#43;is%3Aopen&amp;amp;type=Issues&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;15&lt;/a&gt; more in the pipeline for review.&lt;/p&gt;
+&lt;p&gt;Having participants ring the gong themselves after their PRs were accepted was definitely a change for the better! Witness Gabriel Odom in action 
+&lt;a href=&#34;https://twitter.com/RevDocGabriel/status/1223445860421230592?s=20&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;save-the-date-pre-user-2020-dev-day&#34;&gt;Save the date: Pre-useR! 2020 dev day&lt;/h2&gt;
+&lt;p&gt;We will be holding our next Tidyverse developer day on &lt;strong&gt;July 6th&lt;/strong&gt; in St. Louis prior to 
+&lt;a href=&#34;https://user2020.r-project.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;useR! 2020&lt;/a&gt;.
+We haven&amp;rsquo;t yet finalized all the details, but it will be in the conference hotel.
+Tickets will go on sale once the logistics are firmly in place.&lt;/p&gt;
+&lt;p&gt;Please note that there will be the first ever R 
+&lt;a href=&#34;https://github.com/useR-stl/geospatial-dev-day&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Geospatial Dev Day&lt;/a&gt; at the same time, run by the Geospatial-Track team, and led by 
+&lt;a href=&#34;https://angela-li.github.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Angela Li&lt;/a&gt;! If you work with geospatial data in R, we highly recommend that you check it out (especially if you&amp;rsquo;ve already been to a Tidyverse developer day).&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

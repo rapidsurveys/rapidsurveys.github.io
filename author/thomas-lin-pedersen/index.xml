@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Thomas Lin Pedersen | nutriverse</title>
+    <link>/author/thomas-lin-pedersen/</link>
+      <atom:link href="/author/thomas-lin-pedersen/index.xml" rel="self" type="application/rss+xml" />
+    <description>Thomas Lin Pedersen</description>
+    <generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Fri, 15 May 2020 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Updates to ragg and systemfonts</title>
+      <link>/blog/2020/05/updates-to-ragg-and-systemfonts/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      <guid>/blog/2020/05/updates-to-ragg-and-systemfonts/</guid>
+      <description>&lt;p&gt;We&amp;rsquo;re thrilled to announce the new releases of ragg and systemfonts. ragg is a package that provides a modern set of raster devices as alternatives to the ones you know from the grDevices package (e.g. &lt;code&gt;png()&lt;/code&gt;). systemfonts is a low level package that provides font-related utilities to graphic devices, most importantly detecting and matching fonts to the correct font files across systems.&lt;/p&gt;
+&lt;p&gt;While these are not the most flashy of releases, we thought it would be a good time to discuss some of our thoughts on the future of graphics in R, especially related to fonts.&lt;/p&gt;
+&lt;h2 id=&#34;ragg-020&#34;&gt;ragg 0.2.0&lt;/h2&gt;
+&lt;p&gt;ragg is our take on a modern set of raster devices for R, based based on the AGG 2D graphics library which provides both 
+&lt;a href=&#34;https://ragg.r-lib.org/articles/ragg_quality.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;high quality&lt;/a&gt; and 
+&lt;a href=&#34;https://ragg.r-lib.org/articles/ragg_performance.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;high performance&lt;/a&gt; output (you can read more about it in 
+&lt;a href=&#34;https://www.tidyverse.org/blog/2019/07/ragg-0-1-0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the 0.1.0 release post&lt;/a&gt;). It also provides high quality font support and automatically finds fonts installed on your computer.&lt;/p&gt;
+&lt;p&gt;This release has resolved many rendering bugs and include one major new features: the addition of a jpeg device (&lt;code&gt;agg_jpeg()&lt;/code&gt;) that produces jpegs. jpeg is a lossy image format (i.e. it decreases the image quality to reduce file size) as opposed to png which uses a lossless compression scheme. That means that jpeg is usually not the best choice for most R graphics, but it does excel in compressing image data, so for this type of plot it can offer a very high compression with almost no noticeable degradation in quality:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(ragg)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Warning: package &amp;#39;ragg&amp;#39; was built under R version 3.6.2&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(fs)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Warning: package &amp;#39;fs&amp;#39; was built under R version 3.6.2&lt;/span&gt;
+
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;# Creating some image data&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(ambient)
+&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(dplyr)
+noise &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;long_grid&lt;/span&gt;(
+    x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;seq&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, length.out &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2000&lt;/span&gt;), 
+    y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;seq&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, length.out &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;2000&lt;/span&gt;)
+  ) &lt;span style=&#34;color:#666&#34;&gt;%&amp;gt;%&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;mutate&lt;/span&gt;(
+    z &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;fracture&lt;/span&gt;(
+      noise &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; gen_worley, 
+      fractal &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; billow, 
+      octaves &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;, 
+      gain &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; .x &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0.75&lt;/span&gt;,
+      frequency &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;~&lt;/span&gt; .x &lt;span style=&#34;color:#666&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;3&lt;/span&gt;,
+      x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; x, 
+      y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; y,
+      value &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;distance&amp;#34;&lt;/span&gt;,
+      seed &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;12&lt;/span&gt;
+    )
+  )
+
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;# plot using png&lt;/span&gt;
+pngfile &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;path&lt;/span&gt;(knitr&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;fig_path&lt;/span&gt;(),  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;png_image.png&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#00f&#34;&gt;agg_png&lt;/span&gt;(pngfile, &lt;span style=&#34;color:#666&#34;&gt;2000&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;2000&lt;/span&gt;)
+&lt;span style=&#34;color:#00f&#34;&gt;plot&lt;/span&gt;(noise, z)
+&lt;span style=&#34;color:#00f&#34;&gt;invisible&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;dev.off&lt;/span&gt;())
+knitr&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;include_graphics&lt;/span&gt;(pngfile)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;figs/unnamed-chunk-1-1/png_image.png&#34; width=&#34;700px&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;# plot using jpeg&lt;/span&gt;
+jpegfile &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;path&lt;/span&gt;(knitr&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;fig_path&lt;/span&gt;(),  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;jpeg_image.jpeg&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#00f&#34;&gt;agg_jpeg&lt;/span&gt;(jpegfile, &lt;span style=&#34;color:#666&#34;&gt;2000&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;2000&lt;/span&gt;)
+&lt;span style=&#34;color:#00f&#34;&gt;plot&lt;/span&gt;(noise, z)
+&lt;span style=&#34;color:#00f&#34;&gt;invisible&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;dev.off&lt;/span&gt;())
+
+knitr&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;include_graphics&lt;/span&gt;(jpegfile)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;figs/unnamed-chunk-2-1/jpeg_image.jpeg&#34; width=&#34;700px&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;As you can hopefully agree on, there is no noticeable quality difference between the two. What about file size?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;file_size&lt;/span&gt;(pngfile)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 944K&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;file_size&lt;/span&gt;(jpegfile)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 387K&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We observe more than a 50% file size reduction. Again, this is only worth it when saving image-type plots with high-frequency variations. &lt;code&gt;agg_png()&lt;/code&gt; should be your go-to device for most data visualizations.&lt;/p&gt;
+&lt;h2 id=&#34;systemfonts-020&#34;&gt;systemfonts 0.2.0&lt;/h2&gt;
+&lt;p&gt;systemfonts is a package that spun out of the development of ragg. Its main claim-to-fame is its ability to find the correct font file for a specific font and style. This release has improved a lot of the underlying implementation and added a bunch of new features that may interest you.&lt;/p&gt;
+&lt;h3 id=&#34;why-is-text-so-hard&#34;&gt;Why is text so hard?&lt;/h3&gt;
+&lt;p&gt;Before we delve into the features of systemfonts it may be good to understand why fonts don&amp;rsquo;t just work. At its core text and fonts are just very messy, with differences between operating systems and font file formats to name some of the challenges. (For a humorous overview consult the 
+&lt;a href=&#34;https://gankra.github.io/blah/text-hates-you/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;em&gt;Text Rendering Hates You&lt;/em&gt;&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;There are simply so many issues related to how finding the font files, reading the content, figuring out the correct glyphs for a character string, and determining the correct position of each glyph, that most applications use high-level solutions such as those provided by the operating system or e.g. 
+&lt;a href=&#34;https://www.pango.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Pango&lt;/a&gt;. This is not really an option for graphic devices as text is used in many other ways than the standard &amp;ldquo;text box&amp;rdquo; use that the high-level solutions are tailored to. All-in-all this makes it rather difficult to do fully correct text rendering on graphics device.&lt;/p&gt;
+&lt;h3 id=&#34;new-features&#34;&gt;New features&lt;/h3&gt;
+&lt;p&gt;The core functionality of systemfonts (finding font files) has been expanded with this release. It now makes heavy use of caching to speed up the font queries that may happen many hundreds of times for a single plot. This gives a nice speed boost, but comes at a cost: if a font is installed while your R session is running, you&amp;rsquo;ll need to explicitly run &lt;code&gt;systemfonts::reset_font_cache()&lt;/code&gt; in order to flush the cache.&lt;/p&gt;
+&lt;p&gt;systemfonts has also gained the ability to register fonts that are not installed in the usual place so that e.g. packages can provide a new set of fonts. This is done with the &lt;code&gt;register_font()&lt;/code&gt; function. The font registration can also be used to get access to fonts that are not easily targeted with the limited information you can pass through the graphic engine in R (family, bold-or-not, italic-or-not), or if you want to overwrite the system-specific mappings of &lt;code&gt;&#39;sans&#39;&lt;/code&gt;, &lt;code&gt;&#39;serif&#39;&lt;/code&gt;, and &lt;code&gt;&#39;mono&#39;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Apart from font file matching, systemfonts now also provides the basic infrastructure for text shaping, that is, figuring out the placement of glyphs on a page, taking size, kerning, etc. into account. It further provides efficient functions for calculating string widths and glyph dimensions, something needed if you choose to implement a graphic device.&lt;/p&gt;
+&lt;p&gt;The text shaping, font information, and glyph metrics are available from R, although the intended use is primarily from C:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(systemfonts)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Warning: package &amp;#39;systemfonts&amp;#39; was built under R version 3.6.2&lt;/span&gt;
+
+&lt;span style=&#34;color:#00f&#34;&gt;font_info&lt;/span&gt;(family &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;spectral&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 22&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   path  index family style italic bold  monospace kerning color scalable&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;chr&amp;gt; &amp;lt;int&amp;gt; &amp;lt;chr&amp;gt;  &amp;lt;chr&amp;gt; &amp;lt;lgl&amp;gt;  &amp;lt;lgl&amp;gt; &amp;lt;lgl&amp;gt;     &amp;lt;lgl&amp;gt;   &amp;lt;lgl&amp;gt; &amp;lt;lgl&amp;gt;   &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 /Sys…     0 Helve… Regu… FALSE  FALSE FALSE     FALSE   FALSE TRUE    &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # … with 12 more variables: vertical &amp;lt;lgl&amp;gt;, n_glyphs &amp;lt;int&amp;gt;, n_sizes &amp;lt;int&amp;gt;,&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; #   n_charmaps &amp;lt;int&amp;gt;, bbox &amp;lt;list&amp;gt;, max_ascend &amp;lt;dbl&amp;gt;, max_descend &amp;lt;dbl&amp;gt;,&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; #   max_advance_width &amp;lt;dbl&amp;gt;, max_advance_height &amp;lt;dbl&amp;gt;, lineheight &amp;lt;dbl&amp;gt;,&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; #   underline_pos &amp;lt;dbl&amp;gt;, underline_size &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;glyph_info&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;glyphs&amp;#34;&lt;/span&gt;, family &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;spectral&amp;#34;&lt;/span&gt;, size &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;14&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 6 x 9&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   glyph index width height x_bearing y_bearing x_advance y_advance bbox     &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;chr&amp;gt; &amp;lt;int&amp;gt; &amp;lt;dbl&amp;gt;  &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt; &amp;lt;list&amp;gt;   &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 g        74     7     10         0         7         8         0 &amp;lt;dbl [4]&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 2 l        79     3     10         0        10         3         0 &amp;lt;dbl [4]&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 3 y        92     7     10         0         7         7         0 &amp;lt;dbl [4]&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 4 p        83     8     10         0         7         8         0 &amp;lt;dbl [4]&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 5 h        75     7     10         0        10         8         0 &amp;lt;dbl [4]&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 6 s        86     7      7         0         7         7         0 &amp;lt;dbl [4]&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;text &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;This is an example of the current text shaping engine build in to systemfonts. It does automatic text wrapping and support advanced layout features such as first-line and hanging indent. It also support setting &amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;tracking&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34; on some word and generally mixing text with different &amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;fonts, &amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;sizes,&amp;#34;&lt;/span&gt;, 
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34; and styles.&amp;#34;&lt;/span&gt;
+) 
+family &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;charter&amp;#39;&lt;/span&gt;, 
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;charter&amp;#39;&lt;/span&gt;, 
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;charter&amp;#39;&lt;/span&gt;, 
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;exo 2&amp;#39;&lt;/span&gt;, 
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;charter&amp;#39;&lt;/span&gt;, 
+  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;charter&amp;#39;&lt;/span&gt;
+)
+italic &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt;  &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;FALSE&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;), &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;TRUE&lt;/span&gt;)
+bold &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;FALSE&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;), &lt;span style=&#34;color:#008000;font-weight:bold&#34;&gt;TRUE&lt;/span&gt;)
+style &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;plain&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;5&lt;/span&gt;), &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;bold.italic&amp;#34;&lt;/span&gt;)
+size &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;14&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;), &lt;span style=&#34;color:#666&#34;&gt;24&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;14&lt;/span&gt;)
+shape &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;shape_string&lt;/span&gt;(
+  text, 
+  id &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;1&lt;/span&gt;, 
+  family &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; family,
+  italic &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; italic,
+  bold &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; bold,
+  size &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; size,
+  tracking &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;400&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;4&lt;/span&gt;)),
+  width &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;4.5&lt;/span&gt;,
+  indent &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0.2&lt;/span&gt;,
+  hjust &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0.5&lt;/span&gt;,
+  vjust &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0.5&lt;/span&gt;,
+  res &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;300&lt;/span&gt;
+)
+
+shape
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; $shape&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 299 x 7&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;    glyph index metric_id string_id x_offset y_offset x_midpoint&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;    &amp;lt;chr&amp;gt; &amp;lt;int&amp;gt;     &amp;lt;int&amp;gt;     &amp;lt;int&amp;gt;    &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  1 &amp;#34;T&amp;#34;      55         1         1   -133.      47.7       4.2 &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  2 &amp;#34;h&amp;#34;      75         1         1   -125.      47.7       3.96&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  3 &amp;#34;i&amp;#34;      76         1         1   -117.      47.7       1.92&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  4 &amp;#34;s&amp;#34;      86         1         1   -113.      47.7       2.76&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  5 &amp;#34; &amp;#34;       3         1         1   -108.      47.7       1.92&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  6 &amp;#34;i&amp;#34;      76         1         1   -104.      47.7       1.92&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  7 &amp;#34;s&amp;#34;      86         1         1    -99.8     47.7       2.76&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  8 &amp;#34; &amp;#34;       3         1         1    -94.3     47.7       1.92&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;  9 &amp;#34;a&amp;#34;      68         1         1    -90.5     47.7       3.48&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 10 &amp;#34;n&amp;#34;      81         1         1    -83.5     47.7       3.96&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # … with 289 more rows&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; &lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; $metrics&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # A tibble: 1 x 11&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   string width height left_bearing right_bearing top_bearing bottom_bearing&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt;   &amp;lt;chr&amp;gt;  &amp;lt;dbl&amp;gt;  &amp;lt;dbl&amp;gt;        &amp;lt;dbl&amp;gt;         &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt;          &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; 1 This …  1350   582.           -1            15        13.8           1.02&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; # … with 4 more variables: left_border &amp;lt;dbl&amp;gt;, top_border &amp;lt;dbl&amp;gt;, pen_x &amp;lt;dbl&amp;gt;,&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; #   pen_y &amp;lt;dbl&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#00f&#34;&gt;library&lt;/span&gt;(grid)
+
+pngfile &lt;span style=&#34;color:#666&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;path&lt;/span&gt;(knitr&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;fig_path&lt;/span&gt;(),  &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;png_image.png&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#00f&#34;&gt;agg_png&lt;/span&gt;(pngfile, &lt;span style=&#34;color:#666&#34;&gt;6&lt;/span&gt;, &lt;span style=&#34;color:#666&#34;&gt;2.5&lt;/span&gt;, unit &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#39;in&amp;#39;&lt;/span&gt;, res &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;300&lt;/span&gt;)
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; Warning in agg_png(pngfile, 6, 2.5, unit = &amp;#34;in&amp;#34;, res = 300): partial argument&lt;/span&gt;
+&lt;span style=&#34;color:#408080;font-style:italic&#34;&gt;#&amp;gt; match of &amp;#39;unit&amp;#39; to &amp;#39;units&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#00f&#34;&gt;grid.text&lt;/span&gt;(
+  shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;glyph, 
+  x &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;unit&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;0.5&lt;/span&gt;, &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;npc&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;unit&lt;/span&gt;(shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;x_offset, &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;pt&amp;#34;&lt;/span&gt;), 
+  y &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;unit&lt;/span&gt;(&lt;span style=&#34;color:#666&#34;&gt;0.5&lt;/span&gt;, &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;npc&amp;#34;&lt;/span&gt;) &lt;span style=&#34;color:#666&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;unit&lt;/span&gt;(shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;y_offset, &lt;span style=&#34;color:#ba2121&#34;&gt;&amp;#34;pt&amp;#34;&lt;/span&gt;),
+  hjust &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;,
+  vjust &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;0&lt;/span&gt;,
+  gp &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;gpar&lt;/span&gt;(
+    fontfamily &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; family[shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;string_id],
+    fontface &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; style[shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;string_id],
+    fontsize &lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt; size[shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;shape&lt;span style=&#34;color:#666&#34;&gt;$&lt;/span&gt;string_id]
+  )
+)
+&lt;span style=&#34;color:#00f&#34;&gt;invisible&lt;/span&gt;(&lt;span style=&#34;color:#00f&#34;&gt;dev.off&lt;/span&gt;())
+knitr&lt;span style=&#34;color:#666&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;include_graphics&lt;/span&gt;(pngfile)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;figs/unnamed-chunk-7-1/png_image.png&#34; width=&#34;700px&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;When you see this you may immediately think of the work Claus Wilke has done with 
+&lt;a href=&#34;https://wilkelab.org/gridtext/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gridtext&lt;/a&gt;. We are both committed to improving the rich text support in R, and are attacking the problem from different directions. Claus has worked on doing per-word shaping, whereas the text shaping done in systemfonts are done glyph-by-glyph. Both approaches have their merits, and we are currently at a stage where we are trying to figure out how to best solve this in R. At the time of writing there is no doubt that gridtext is more complete and stable, but doing glyph-based shaping offers possibilities that are not possible with gridtext, e.g. setting tracking and flowing text along paths. All of this is highly experimental still, and there will need to be some changes in the graphic engine to make glyph-based rendering performant.&lt;/p&gt;
+&lt;h3 id=&#34;the-font-ier&#34;&gt;The font-ier&lt;/h3&gt;
+&lt;p&gt;A big (for some) issue that I haven&amp;rsquo;t touched upon is support for ligatures. A &lt;strong&gt;ligature&lt;/strong&gt; is a glyph that represents multiple characters, as when &amp;ldquo;f&amp;rdquo; and &amp;ldquo;i&amp;rdquo; are substituted for the single glyph &amp;ldquo;ﬁ&amp;rdquo;. Ligatures are often used as flourishes in Western scripts but are essential for other scripts such as Arabic. Further, ligatures power emojis which have become an integral part of modern communication.&lt;/p&gt;
+&lt;p&gt;While we don&amp;rsquo;t currently have support for ligatures, there&amp;rsquo;s no doubt that we need it. The exact mechanism for this is still up in the air because ligatures must be resolved at the font rendering level. Each font file may provide their own unique ligatures and the mapping from multiple characters to a single glyph can be encoded into a number of different substitution table formats in the font file. Because of this complexity it is often handled by a dedicated library such as 
+&lt;a href=&#34;https://www.freedesktop.org/wiki/Software/HarfBuzz/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;HarfBuzz&lt;/a&gt;. This could of course be wrapped by an R package but since ligatures can not be encoded with unicode (for the most part), there is no way of precomputing the substitution and pass it on to the graphic devices. Whether ligature support can retroactively be added to old graphic devices is thus still up in the air.&lt;/p&gt;
+&lt;p&gt;Text rendering in R is a delicate collaboration between graphic devices, the graphic engine, and additional support packages such as systemfonts and gridtext, but thankfully the focus and will is there in all parts to push this forward.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Upcoming Events | nutriverse</title>
+    <link>/events/</link>
+      <atom:link href="/events/index.xml" rel="self" type="application/rss+xml" />
+    <description>Upcoming Events</description>
+    <generator>Hugo -- gohugo.io</generator><language>en-gb</language><lastBuildDate>Mon, 27 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>rstudio::conf 2020</title>
+      <link>/events/rstudio-conf-2020/</link>
+      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/events/rstudio-conf-2020/</guid>
+      <description>&lt;p&gt;rstudio::conf 2020 covers all things RStudio, including workshops to teach you the tidyverse, and talks to show you the latest and greatest features.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>ICSE 2019</title>
+      <link>/events/icse-2019/</link>
+      <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
+      <guid>/events/icse-2019/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Building Tidy Tools</title>
+      <link>/events/tidy-tools-2019/</link>
+      <pubDate>Wed, 01 May 2019 00:00:00 +0000</pubDate>
+      <guid>/events/tidy-tools-2019/</guid>
+      <description>&lt;p&gt;The class is taught by Hadley Wickham, Chief Scientist at RStudio.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>rstudio::conf 2019</title>
+      <link>/events/rstudio-conf-2019/</link>
+      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+      <guid>/events/rstudio-conf-2019/</guid>
+      <description>&lt;p&gt;We had a great time at the 2019 rstudio::conf! Many attendees arrived early for 2 days of in-depth workshops, followed by two days of conference sessions. This year&amp;rsquo;s conference featured 15 workshops on tidyverse, Shiny, R Markdown, modeling and machine learning, deep learning, big data, and what they forgot to teach you about working with R. Some of the new workshops for this year touched on topics like putting Shiny applications into production at scale and R &amp;amp; Tensorflow. The conference also featured certification workshops on RStudio Professional Administrator and Train-the-trainer for tidyverse and Shiny.&lt;/p&gt;
+&lt;p&gt;Below is a list of all workshops we hosted, with links to materials. Even though
+the materials alone cannot replace the actual workshop experience, we hope that you&amp;rsquo;ll find them useful. RStudio regularly hosts workshops throughout the year so please subscribe to 
+&lt;a href=&#34;https://www.rstudio.com/about/subscription-management/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;training updates&lt;/a&gt;. You can also find out more about each of the workshops
+at the 
+&lt;a href=&#34;https://github.com/rstudio/rstudio-conf/blob/master/2019/workshops.md&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;conference repository&lt;/a&gt;.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Workshop&lt;/th&gt;
+&lt;th&gt;Instructor(s)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/AmeliaMN/data-science-in-tidyverse&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Introduction to Data Science in the Tidyverse&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Amelia McNamara, Hadley Wickham&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://rstd.io/tidytools19&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Building Tidy Tools&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Charlotte Wickham, Hadley Wickham&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://rstd.io/wtf-2019-rsc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;What They Forgot to Teach You About R&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Jenny Bryan, Jim Hester&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/dtkaplan/shinymark&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Intro to Shiny and RMarkdown&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Danny Kaplan&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://arm.rbind.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Advanced R Markdown&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Alison Hill, Yihui Xie&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/aimeegott/RStudio-Conf-Intermediate-Shiny&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Intermediate Shiny&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Aimee Gott, Winston Chang&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/kellobri/spc-app&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Using Shiny in Production&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Kelly O&amp;rsquo;Briant, Sean Lopp&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/topepo/rstudio-conf-2019&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Applied Machine Learning&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Max Kuhn, Alex Hayes, Davis Vaughan&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/rstudio/conf_tensorflow_training_day2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Introduction to Deep Learning + Beyond the Basics&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Sigrid Keydana, Kevin Kuo, Rick Scavetta&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/rstudio/bigdataclass&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Big Data with R&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Edgar Ruiz, James Blair&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/rstudio-education/teaching-workshop-2019-01&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Train-the-Trainer Certification Workshop&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Greg Wilson&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;http://teach-shiny.rbind.io&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Shiny Train-the-Trainer Certification Workshop&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Mine Çetinkaya-Rundel&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/rstudio-education/teach-tidy&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tidyverse Train-the-Trainer Certification Workshop&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Garrett Grolemund&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://colorado.rstudio.com/rsc/pro-admin-training/overview/Overview.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RStudio Professional Administrator Certification Workshop&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Andrie de Vries&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>rstudio::conf 2018</title>
+      <link>/events/rstudio-conf-2018/</link>
+      <pubDate>Mon, 15 Jan 2018 00:00:00 +0000</pubDate>
+      <guid>/events/rstudio-conf-2018/</guid>
+      <description>&lt;p&gt;We had a great time at the 2019 rstudio::conf! Many attendees arrived early for 2 days of in-depth workshops, followed by two days of conference sessions. This year&amp;rsquo;s conference featured 15 workshops on tidyverse, Shiny, R Markdown, modeling and machine learning, deep learning, big data, and what they forgot to teach you about working with R. Some of the new workshops for this year touched on topics like putting Shiny applications into production at scale and R &amp;amp; Tensorflow. The conference also featured certification workshops on RStudio Professional Administrator and Train-the-trainer for tidyverse and Shiny.&lt;/p&gt;
+&lt;p&gt;Below is a list of all workshops we hosted, with links to materials. Even though
+the materials alone cannot replace the actual workshop experience, we hope that you&amp;rsquo;ll find them useful. RStudio regularly hosts workshops throughout the year so please subscribe to 
+&lt;a href=&#34;https://www.rstudio.com/about/subscription-management/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;training updates&lt;/a&gt;. You can also find out more about each of the workshops
+at the 
+&lt;a href=&#34;https://github.com/rstudio/rstudio-conf/blob/master/2019/workshops.md&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;conference repository&lt;/a&gt;.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Workshop&lt;/th&gt;
+&lt;th&gt;Instructor(s)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/AmeliaMN/data-science-in-tidyverse&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Introduction to Data Science in the Tidyverse&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Amelia McNamara, Hadley Wickham&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://rstd.io/tidytools19&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Building Tidy Tools&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Charlotte Wickham, Hadley Wickham&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://rstd.io/wtf-2019-rsc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;What They Forgot to Teach You About R&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Jenny Bryan, Jim Hester&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/dtkaplan/shinymark&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Intro to Shiny and RMarkdown&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Danny Kaplan&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://arm.rbind.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Advanced R Markdown&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Alison Hill, Yihui Xie&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/aimeegott/RStudio-Conf-Intermediate-Shiny&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Intermediate Shiny&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Aimee Gott, Winston Chang&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/kellobri/spc-app&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Using Shiny in Production&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Kelly O&amp;rsquo;Briant, Sean Lopp&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/topepo/rstudio-conf-2019&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Applied Machine Learning&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Max Kuhn, Alex Hayes, Davis Vaughan&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/rstudio/conf_tensorflow_training_day2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Introduction to Deep Learning + Beyond the Basics&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Sigrid Keydana, Kevin Kuo, Rick Scavetta&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/rstudio/bigdataclass&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Big Data with R&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Edgar Ruiz, James Blair&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/rstudio-education/teaching-workshop-2019-01&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Train-the-Trainer Certification Workshop&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Greg Wilson&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;http://teach-shiny.rbind.io&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Shiny Train-the-Trainer Certification Workshop&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Mine Çetinkaya-Rundel&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://github.com/rstudio-education/teach-tidy&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tidyverse Train-the-Trainer Certification Workshop&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Garrett Grolemund&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;a href=&#34;https://colorado.rstudio.com/rsc/pro-admin-training/overview/Overview.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RStudio Professional Administrator Certification Workshop&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Andrie de Vries&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
