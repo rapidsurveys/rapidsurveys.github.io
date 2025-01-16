@@ -1,0 +1,27 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/packages/bbw.html",
+      "/packages/okapi.html",
+      "/packages/oldr.html"
+    ]
+  },
+  {
+    "listing": "/about/team.html",
+    "items": [
+      "/team/aziz-goza.html",
+      "/team/emmanuel-mandalazi.html",
+      "/team/ernest-guevarra.html"
+    ]
+  },
+  {
+    "listing": "/packages/index.html",
+    "items": [
+      "/packages/bbw.html",
+      "/packages/odkr.html",
+      "/packages/okapi.html",
+      "/packages/oldr.html"
+    ]
+  }
+]
