@@ -1,0 +1,35 @@
+---
+title: "odkr: Open Data Kit (ODK) R API"
+image: ../images/rapidsurveys.png
+---
+
+::: {.column-margin}
+
+[![](../images/rapidsurveys.png)](https://rapidsurveys.io/odkr/){target="blank"}
+
+:::
+
+# odkr: Open Data Kit (ODK) R API
+
+<!-- badges: start -->
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+<!-- badges: end -->
+
+**Open Data Kit (ODK)** is a free and open-source set of tools which help organizations author, field, and manage mobile data collection solutions. ODK provides an out-of-the-box solution for users to:
+
+* Build a data collection form or survey;
+* Collect the data on a mobile device and send it to a server; and
+* Aggregate the collected data on a server and extract it in useful formats.
+
+`odkr` is a set of interface and utility tools for a **useR** working with ODK. The package currently has two classes of functions: 1) *data processing* tools; and, 2) *ODK-R interface* functions.
+
+For *data processing*, there are currently three functions included which can be used to perform typical data processing tasks associated with working with ODK-collected datasets such as renaming variables in a dataset, expansion of responses to questions that allow more than one answer and merging of nested datasets.
+
+For *ODK-R interface*, included are a set of functions that work via a command line interface with the Java application **ODK Briefcase** for fetching and pushing Open Data Kit (ODK) forms and their contents. It can be used to gather and aggregate data from the mobile client **ODK Collect** when there is no internet connectivity, when there is no **ODK Aggregate Server** set-up or when an **ODK Aggregate Server** is not preferred. Current production version of **ODK Briefcase** is v1.8.0 and an executable `.jar` file can be downloaded from the Open Data Kit [website](https://opendatakit.org/use/briefcase/).
+
+As of **ODK Briefcase** version 1.4.4, a scriptable command line interface (CLI) to the Java application has been available. This package provides an R interface to **ODK Briefcase** via the available CLI to pull forms from a remote **ODK Aggregate  Server** or from a local ODK folder `/odk` collected from mobile clients. This package has a function that downloads the latest version of **ODK Briefcase** (currently v1.8.0) and additional functions that use the CLI of **ODK Briefcase** to perform data extraction and data export. This package requires Java 8 installed. Java 8 can be downloaded from [here](https://java.com/en/download/).
+
+For more information on the `{odkr}` package, you can visit the [project website](https://rapidsurveys.io/odkr/). To learn about the underlying code for this software development project, see the [GitHub code repository](https://github.com/rapidsurveys/odkr).
+
+If you are interested in contributing to this project, please be aware of its [Contributor Code of Conduct](https://rapidsurveys.io/odkr/CODE_OF_CONDUCT.html). By participating in this project you agree to abide by its terms. To see a list of features that we are either actively working on, are considering, or need help on, visit our [GitHub issues](https://github.com/rapidsurveys/odkr/issues) page. If you find something that you can help with, follow these [steps on how to contribute](https://rapidsurveys.io/odkr/CONTRIBUTING.html).

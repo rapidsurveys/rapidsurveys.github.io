@@ -1,0 +1,67 @@
+---
+title: ""
+page-layout: custom
+section-divs: false
+toc: false
+listing:
+  id: featured-packages
+  contents:
+    - packages/bbw.qmd
+    - packages/oldr.qmd
+    - packages/okapi.qmd
+  type: grid
+  image-height: 400px
+  image-placeholder: images/rapidsurveys.png
+  grid-item-border: false
+  max-items: 3
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(quarto)
+```
+
+::: {.hero-banner}
+
+::: {.content-block}
+
+::: {.hero-text}
+
+# Open source tools for designing, planning, implementing, and analysing rapid, reliable, and robust health and nutrition surveys.
+
+### Open source project that aims to develop software tools and systems for health and nutrition surveys. 
+
+::: {.hero-buttons}
+[Our packages](/packages/){#btn-guide .btn-action .btn .btn-info .btn-lg role="button"} 
+<!-- [Our guides](/guides/){#btn-guide .btn-action .btn .btn-info .btn-lg role="button"} -->
+::: 
+
+:::
+
+::: {.hero-image-right}
+
+<!-- ![](images/nutriverse.png){fig-align="right" height="400px"} -->
+![](images/rapidsurveys.png){fig-align="right" width="400px"}
+
+:::
+
+:::
+
+:::
+
+
+
+::: {.theme-banner}
+
+::: {.info-block}
+
+# Featured packages
+
+::: {#featured-packages}
+:::
+
+:::
+
+:::
