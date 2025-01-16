@@ -1,0 +1,18 @@
+---
+listing:
+  id: hex-listing
+  template: ../ejs/hexlisting.ejs
+  contents:
+    - title: bbw
+      path: bbw.qmd
+    - title: odkr
+      path: odkr.qmd
+    - title: okapi
+      path: okapi.qmd
+    - title: oldr
+      path: oldr.qmd
+---
+
+:::{#hex-listing}
+
+:::

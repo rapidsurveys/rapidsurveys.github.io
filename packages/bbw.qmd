@@ -1,0 +1,23 @@
+---
+title: "bbw: Blocked Weighted Bootstrap"
+image: ../images/bbw.png
+---
+
+::: {.column-margin}
+
+[![](../images/bbw.png)](https://rapidsurveys.io/bbw/){target="blank"}
+
+:::
+
+<!-- badges: start -->
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![CRAN](https://img.shields.io/cran/v/bbw.svg)](https://cran.r-project.org/package=bbw)
+<!-- badges: end -->
+
+## Overview
+The **blocked weighted bootstrap** is an estimation technique for use with data from two-stage cluster sampled surveys in which either prior weighting (e.g. *population-proportional sampling* or *PPS* as used in [Standardized Monitoring and Assessment of Relief and Transitions (SMART)](https://smartmethodology.org/) surveys) or *posterior weighting* (e.g. as used in [Rapid Assessment Method (RAM)](https://rapidsurveys.io/ramOPmanual/) and [Simple Spatial Sampling Method (S3M)](https://researchonline.lshtm.ac.uk/id/eprint/2572543) surveys) is implemented.
+
+For more information on the `{bbw}` package, you can visit the [project website](https://rapidsurveys.io/bbw/). To learn about the underlying code for this software development project, see the [GitHub code repository](https://github.com/rapidsurveys/bbw).
+
+If you are interested in contributing to this project, please be aware of its [Contributor Code of Conduct](https://rapidsurveys.io/bbw/CODE_OF_CONDUCT.html). By participating in this project you agree to abide by its terms. To see a list of features that we are either actively working on, are considering, or need help on, visit our [GitHub issues](https://github.com/rapidsurveys/bbw/issues) page. If you find something that you can help with, follow these [steps on how to contribute](https://rapidsurveys.io/bbw/CONTRIBUTING.html).

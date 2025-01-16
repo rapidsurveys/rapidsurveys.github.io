@@ -1,0 +1,31 @@
+---
+title: "okapi: Open Data Kit (ODK)-based Computer-assisted Personal Interview (CAPI) Tools"
+image: ../images/okapi.png
+---
+
+::: {.column-margin}
+
+[![](../images/okapi.png)](https://rapidsurveys.io/okapi/){target="blank"}
+
+:::
+
+<!-- badges: start -->
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+<!-- badges: end -->
+
+Data collection using computer-assisted personal interviewing (CAPI) tools is now the standard approach for conducting surveys and studies. A wide range of CAPI systems are currently being used. The ability to interface with these systems helps in the overall data process. This package provides interface functions to CAPI systems based on the [Open Data Kit (ODK)](https://getodk.org) technology.
+
+## What does the package do?
+
+Currently, `{okapi}` provides functions to interface with [ONA](https://getodk.org) via its [API](https://api.ona.io/static/docs/index.html). The current set of functions perform the following tasks:
+
+1. Authenticate with the respective servers using either an account password or an API token;
+
+2. List resources in the server available to interface with; and,
+
+3. Get data or resources from the server to [R](https://cran.r-project.org).
+
+For more information on the `{okapi}` package, you can visit the [project website](https://rapidsurveys.io/okapi/). To learn about the underlying code for this software development project, see the [GitHub code repository](https://github.com/rapidsurveys/okapi).
+
+If you are interested in contributing to this project, please be aware of its [Contributor Code of Conduct](https://rapidsurveys.io/okapi/CODE_OF_CONDUCT.html). By participating in this project you agree to abide by its terms. To see a list of features that we are either actively working on, are considering, or need help on, visit our [GitHub issues](https://github.com/rapidsurveys/okapi/issues) page. If you find something that you can help with, follow these [steps on how to contribute](https://rapidsurveys.io/okapi/CONTRIBUTING.html).
