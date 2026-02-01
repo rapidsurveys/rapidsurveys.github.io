@@ -1,13 +1,5 @@
 [
   {
-    "listing": "/index.html",
-    "items": [
-      "/packages/bbw.html",
-      "/packages/okapi.html",
-      "/packages/oldr.html"
-    ]
-  },
-  {
     "listing": "/about/team.html",
     "items": [
       "/team/aziz-goza.html",
@@ -20,6 +12,14 @@
     "items": [
       "/packages/bbw.html",
       "/packages/odkr.html",
+      "/packages/okapi.html",
+      "/packages/oldr.html"
+    ]
+  },
+  {
+    "listing": "/index.html",
+    "items": [
+      "/packages/bbw.html",
       "/packages/okapi.html",
       "/packages/oldr.html"
     ]
