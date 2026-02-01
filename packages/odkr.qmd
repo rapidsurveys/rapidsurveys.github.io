@@ -1,11 +1,11 @@
 ---
 title: "odkr: Open Data Kit (ODK) R API"
-image: ../images/rapidsurveys.png
+image: ../images/odkr.png
 ---
 
 ::: {.column-margin}
 
-[![](../images/rapidsurveys.png)](https://rapidsurveys.io/odkr/){target="blank"}
+[![](../images/odkr.png)](https://rapidsurveys.io/odkr/){target="blank"}
 
 :::
 

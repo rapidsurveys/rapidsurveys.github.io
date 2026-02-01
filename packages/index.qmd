@@ -1,4 +1,5 @@
 ---
+page-layout: custom
 listing:
   id: hex-listing
   template: ../ejs/hexlisting.ejs
@@ -13,6 +14,39 @@ listing:
       path: oldr.qmd
 ---
 
+::: {.about-banner}
+::: {.content-block}
+
+# R Packages
+
+::: {style="color: #3F0042"}
+
+#### Tools for Nutrition Research and Analysis
+
+:::
+
+Our collection of packages developed by and contributed to by our community. These package were developed as part of a specific project but had more general use for implementing rapid, reliable, and robust health and nutrition surveys.
+
+:::
+:::
+
+<br/>
+
+::: {.grid}
+
+::: {.g-col-4}
+
+:::
+
+::: {.g-col-8}
+
 :::{#hex-listing}
+:::
+
+:::
+
+::: {.g-col-4}
+
+:::
 
 :::
